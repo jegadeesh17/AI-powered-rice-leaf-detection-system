@@ -25,9 +25,9 @@ The system leverages convolutional neural networks (CNNs), image preprocessing p
 
 ### **Dataset**
 
-* **Source:** Rice Leaf Disease Image Dataset-"sethy, prabira Kumar (2020), “Rice Leaf Disease Image Samples”, Mendeley Data, V1, doi: 10.17632/fwcj7stb8r.1"
-* **Domain:** Agricultural Computer Vision
-* **Data Type:** Labeled rice leaf images
+* **Source:** Rice Leaf Disease Image Dataset ("Rice Leaf Disease Image Samples", Mendeley Data, V1, doi: 10.17632/fwcj7stb8r.1)
+* **Coverage:** Multi-class disease leaf image samples
+* **Data Type:** Labeled RGB rice leaf images
 
 #### **Disease Categories**
 
@@ -36,12 +36,12 @@ The system leverages convolutional neural networks (CNNs), image preprocessing p
 * Leaf Smut
 * Healthy Rice Leaves
 
-#### **Image Features**
+#### **Key Features Analyzed**
 
-* RGB rice leaf images
-* Disease texture patterns
-* Leaf discoloration regions
+* Leaf texture irregularities
+* Color variations and discoloration regions
 * Spot and lesion characteristics
+* Disease spread and density patterns
 * Image pixel intensity distributions
 
 ---
@@ -52,10 +52,15 @@ The system leverages convolutional neural networks (CNNs), image preprocessing p
 AI-System-for-Rice-Leaf/
 │
 ├── data/                         # Rice leaf image datasets
+│
 ├── notebooks/                    # Jupyter notebooks for experimentation
+│
 ├── models/                       # Saved trained models
+│
 ├── outputs/                      # Predictions and evaluation outputs
+│
 ├── visualizations/               # Accuracy plots and confusion matrices
+│
 ├── src/
 │   ├── data_loader.py            # Data loading and preprocessing pipeline
 │   ├── model_builder.py          # Deep learning model architectures (CNN, MobileNet, EfficientNet)
@@ -72,18 +77,14 @@ AI-System-for-Rice-Leaf/
 
 ### **How It Works**
 
-### **1. Image Preprocessing**
+### **1. Image Preprocessing & Augmentation**
 
 * Loads rice leaf image datasets
-* Resizes images into model-compatible dimensions
+* Resizes images into model-compatible dimensions (e.g. 224x224)
 * Normalizes pixel values for stable training
 * Performs train-validation-test splitting
 
----
-
-### **2. Data Augmentation**
-
-The system applies augmentation techniques to improve model generalization:
+The system applies data augmentation techniques to improve model generalization:
 
 | Augmentation Technique | Purpose                           |
 | ---------------------- | --------------------------------- |
@@ -95,16 +96,16 @@ The system applies augmentation techniques to improve model generalization:
 
 ---
 
-### **3. Deep Learning Architecture**
+### **2. Deep Learning Architecture**
 
-Uses convolutional neural networks (CNNs) for automated disease classification.
+Uses convolutional neural networks (CNNs) and transfer learning models for automated disease classification.
 
 ```python
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
 
 model = Sequential([
-    Conv2D(32, (3,3), activation='relu'),
+    Conv2D(32, (3,3), activation='relu', input_shape=(224, 224, 3)),
     MaxPooling2D(2,2),
     Conv2D(64, (3,3), activation='relu'),
     MaxPooling2D(2,2),
@@ -116,30 +117,12 @@ model = Sequential([
 
 ---
 
-### **4. Disease Classification**
+### **3. Model Explainability (Grad-CAM)**
 
-The AI model predicts rice leaf disease categories using learned image features such as:
-
-* Leaf texture irregularities
-* Color variations
-* Spot density and shape
-* Disease spread patterns
-
-The system outputs the most probable disease class for each rice leaf image.
-
----
-
-### **5. Machine Learning Model**
-
-#### **Model Used**
-
-* **Convolutional Neural Network (CNN)**
-
-#### **Why CNN?**
-
-* Excellent performance on image classification tasks
-* Automatically learns spatial disease patterns
-* Captures texture and color-based abnormalities effectively
+The system integrates Grad-CAM (Gradient-weighted Class Activation Mapping) to produce visual explanations from the CNN:
+* Highlights specific disease patterns and lesion spots
+* Aids agricultural experts in understanding model reasoning
+* Validates classification focus points on the leaf structure
 
 ---
 
@@ -154,29 +137,28 @@ The system outputs the most probable disease class for each rice leaf image.
 
 ---
 
-### **6. Visualization & Evaluation**
+### **Interactive Application Deployment**
 
-The project generates multiple evaluation visualizations.
+The project features an interactive **Streamlit Web Application** designed with clean UI aesthetics, enabling users to upload leaf images and run real-time classification.
 
-#### Features:
-
-* Training vs validation accuracy plots
-* Loss curve visualization
-* Confusion matrix analysis
-* Disease-wise prediction distribution
-* Model performance monitoring
+#### **To Launch the Platform Locally:**
+```powershell
+python -m streamlit run ".\AI-Powered Rice Leaf Disease Detection System\src\streamlit_app.py"
+```
 
 ---
 
-### **7. AI-Based Agricultural Intelligence**
+### **Technology Stack**
 
-The system enables:
-
-* Early rice disease detection
-* Reduced crop damage
-* Faster agricultural decision-making
-* Scalable smart farming solutions
-* AI-assisted precision agriculture
+| Category             | Tools                     |
+| -------------------- | ------------------------- |
+| Programming          | Python                    |
+| Deep Learning        | TensorFlow, Keras         |
+| Data Processing      | NumPy, Pandas             |
+| Visualization        | Matplotlib, Seaborn       |
+| Image Processing     | OpenCV                    |
+| Notebook Environment | Jupyter Notebook          |
+| Web Framework        | Streamlit                 |
 
 ---
 
@@ -237,33 +219,11 @@ A smart agriculture platform can use this system to:
 
 ---
 
-### **Technology Stack**
-
-| Category             | Tools               |
-| -------------------- | ------------------- |
-| Programming          | Python              |
-| Deep Learning        | TensorFlow, Keras   |
-| Data Processing      | NumPy, Pandas       |
-| Visualization        | Matplotlib, Seaborn |
-| Image Processing     | OpenCV              |
-| Notebook Environment | Jupyter Notebook    |
-
----
-
 ### **Future Improvements**
 
 * Mobile app deployment for farmers
 * Cloud-based agricultural monitoring dashboard
 * Integration with fertilizer and treatment recommendation systems
-
----
-
-### **References & Resources**
-
-1. TensorFlow Documentation
-2. Keras Deep Learning API
-3. OpenCV Image Processing Documentation
-4. Rice Leaf Disease Research Papers
 
 ---
 
@@ -276,9 +236,3 @@ A smart agriculture platform can use this system to:
 ### **License**
 
 MIT License
-
----
-
-### **Contact**
-
-For collaboration, research discussions, or contributions, feel free to raise an issue in the repository.
