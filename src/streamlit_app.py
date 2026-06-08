@@ -1,6 +1,6 @@
 import os
-# Force Torch backend for GPU/Grad-CAM consistency across deep learning models
-os.environ["KERAS_BACKEND"] = "torch" 
+# Force TensorFlow backend (PyTorch not installed in this environment)
+os.environ["KERAS_BACKEND"] = "tensorflow"
 
 import streamlit as st
 import sys
