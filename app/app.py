@@ -355,7 +355,7 @@ with tab_diag:
         
         with col_img:
             st.markdown("#### 🌿 Input Specimen")
-            st.image(active_image, caption="Analyzed Field Specimen Capture", use_container_width=True)
+            st.image(active_image, caption="Analyzed Field Specimen Capture", width="stretch")
             
         with col_res:
             st.markdown("#### 🔬 Diagnostic Engine Report")
@@ -409,7 +409,7 @@ with tab_diag:
                 data=report_data,
                 file_name=f"Diagnostic_Report_{top_class}.txt",
                 mime="text/plain",
-                use_container_width=True
+                width="stretch"
             )
             st.caption("💡 Report generation operates entirely in-memory using buffer allocation streaming directly to your web browser.")
 
@@ -443,10 +443,10 @@ with tab_xai:
                 try:
                     heatmap = make_gradcam_heatmap(img_tensor, model)
                     overlay = overlay_heatmap(active_image, heatmap, alpha=heatmap_alpha)
-                    st.image(overlay, caption=f"Grad-CAM Attention Focus (Alpha: {heatmap_alpha})", use_container_width=True)
+                    st.image(overlay, caption=f"Grad-CAM Attention Focus (Alpha: {heatmap_alpha})", width="stretch")
                 except Exception as ge:
                     st.warning(f"Grad-CAM integration fallback triggered. Details: {ge}")
-                    st.image(active_image, caption="Base Image Fallback", use_container_width=True)
+                    st.image(active_image, caption="Base Image Fallback", width="stretch")
                     
         with xc2:
             st.markdown("#### 📊 Probability Density Distribution")
@@ -478,7 +478,7 @@ with tab_history:
             st.metric("Most Frequent Pathogen", class_display_names.get(top_pathogen, top_pathogen))
             
         st.divider()
-        st.dataframe(df_logs, use_container_width=True, hide_index=True)
+        st.dataframe(df_logs, width="stretch", hide_index=True)
         
         st.caption("📌 Local storage files completely eliminate complex maintenance loops. Your data remains perfectly intact even upon terminating application servers.")
 
