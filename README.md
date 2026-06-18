@@ -49,26 +49,15 @@ The system leverages convolutional neural networks (CNNs), image preprocessing p
 ### **Project Structure**
 
 ```bash
-AI-System-for-Rice-Leaf/
+RiceLeafDetection/
 │
-├── data/                         # Rice leaf image datasets
-│
-├── notebooks/                    # Jupyter notebooks for experimentation
-│
+├── app/                          # Streamlit application files
+│   └── app.py                    # Main Streamlit dashboard
+├── data/                         # Project datasets
+├── docs/                         # Documentation and visualizations
 ├── models/                       # Saved trained models
-│
-├── outputs/                      # Predictions and evaluation outputs
-│
-├── visualizations/               # Accuracy plots and confusion matrices
-│
-├── src/
-│   ├── data_loader.py            # Data loading and preprocessing pipeline
-│   ├── model_builder.py          # Deep learning model architectures (CNN, MobileNet, EfficientNet)
-│   ├── interpretability.py       # Grad-CAM explainability scripts
-│   ├── evaluation.py             # Evaluation and metrics scripts
-│   └── streamlit_app.py          # Interactive Streamlit dashboard application
-│
-├── rice_leaf_ai_system.ipynb     # Main end-to-end notebook
+├── notebooks/                    # Jupyter notebooks (Source of Truth)
+├── src/                          # Core Python logic and scripts
 ├── requirements.txt              # Python dependencies
 └── README.md
 ```
@@ -143,7 +132,7 @@ The project features an interactive **Streamlit Web Application** designed with 
 
 #### **To Launch the Platform Locally:**
 ```powershell
-python -m streamlit run ".\AI-Powered Rice Leaf Disease Detection System\src\streamlit_app.py"
+streamlit run app/app.py
 ```
 
 ---
@@ -169,7 +158,7 @@ python -m streamlit run ".\AI-Powered Rice Leaf Disease Detection System\src\str
 ```bash
 git clone https://github.com/yourusername/Rice-Leaf-Disease-Diagnostic-AI-System.git
 
-cd AI-System-for-Rice-Leaf
+cd RiceLeafDetection
 ```
 
 ---
