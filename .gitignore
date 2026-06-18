@@ -51,3 +51,6 @@ logs-*.txt
 *.pdf
 *.doc
 *.wpf
+
+# Databases
+*.db
