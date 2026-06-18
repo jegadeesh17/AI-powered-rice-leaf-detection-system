@@ -1,7 +1,11 @@
 import os
-# Force TensorFlow backend (PyTorch not installed in this environment)
-os.environ["KERAS_BACKEND"] = "tensorflow"
+import importlib.util
 
+# Dynamically select backend based on environment capabilities
+if importlib.util.find_spec("torch") is not None:
+    os.environ["KERAS_BACKEND"] = "torch"
+else:
+    os.environ["KERAS_BACKEND"] = "tensorflow"
 import streamlit as st
 import sys
 import time
