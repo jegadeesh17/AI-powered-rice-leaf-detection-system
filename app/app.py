@@ -277,7 +277,7 @@ Generated via AI Diagnostics Pipeline
 # ==========================================
 @st.cache_resource(show_spinner=False)
 def load_rice_model():
-    model_path = os.path.join(os.path.dirname(__file__), "../models/rice_ai_best.keras")
+    model_path = os.path.join(os.path.dirname(__file__), "../models/ai_system_rice_leaf_final.keras")
     if not os.path.exists(model_path):
         model_path = os.path.join(os.path.dirname(__file__), "rice_leaf_disease_model.keras")
     return keras.models.load_model(model_path, compile=False)
