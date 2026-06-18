@@ -11,7 +11,7 @@ __pycache__/
 
 # Keras & Deep Learning
 models/*.keras
-!models/rice_ai_best.keras
+!models/ai_system_rice_leaf_final.keras
 models/*.h5
 *.weights.h5
 logs/
