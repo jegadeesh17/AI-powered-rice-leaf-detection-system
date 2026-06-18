@@ -1,8 +1,6 @@
 # Core Deep Learning
 keras>=3.0.0
-torch
-torchvision
-torchaudio
+tensorflow-cpu
 
 # Computer Vision & Image Processing
 opencv-python-headless
