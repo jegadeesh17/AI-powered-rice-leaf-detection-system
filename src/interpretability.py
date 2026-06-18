@@ -43,22 +43,48 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name="top_conv"):
     
     if backend == "tensorflow":
         import tensorflow as tf
-        # For TF, we still use the Functional Model approach as it's more stable there
-        # but we ensure the model is functionalized if needed
-        if not (hasattr(model, "input") and hasattr(model, "output")):
-            inputs = keras.layers.Input(shape=img_array.shape[1:])
-            outputs = model(inputs)
-            func_model = keras.models.Model(inputs, outputs)
-            target_layer = find_layer_recursive(func_model, last_conv_layer_name) or find_last_conv_recursive(func_model)
+        
+        # Check if the target layer is inside a nested base model
+        inner_model = None
+        if hasattr(model, "layers"):
+            for layer in model.layers:
+                if isinstance(layer, keras.models.Model):
+                    if find_layer_recursive(layer, target_layer.name):
+                        inner_model = layer
+                        break
+        
+        if inner_model:
+            # Create a gradient model for just the inner base model
+            grad_model_inner = keras.models.Model(inner_model.inputs, [target_layer.output, inner_model.output])
+            with tf.GradientTape() as tape:
+                x = ops.convert_to_tensor(img_array)
+                conv_outputs = None
+                for layer in model.layers:
+                    if layer == inner_model:
+                        conv_outputs, x = grad_model_inner(x)
+                    else:
+                        x = layer(x)
+                predictions = x
+                class_idx = ops.argmax(predictions[0])
+                class_channel = predictions[:, class_idx]
+            grads = tape.gradient(class_channel, conv_outputs)
         else:
-            func_model = model
+            # For TF, we still use the Functional Model approach as it's more stable there
+            # but we ensure the model is functionalized if needed
+            if not (hasattr(model, "input") and hasattr(model, "output")):
+                inputs = keras.layers.Input(shape=img_array.shape[1:])
+                outputs = model(inputs)
+                func_model = keras.models.Model(inputs, outputs)
+                target_layer = find_layer_recursive(func_model, last_conv_layer_name) or find_last_conv_recursive(func_model)
+            else:
+                func_model = model
 
-        grad_model = keras.models.Model(func_model.inputs, [target_layer.output, func_model.output])
-        with tf.GradientTape() as tape:
-            conv_outputs, predictions = grad_model(img_array)
-            class_idx = ops.argmax(predictions[0])
-            class_channel = predictions[:, class_idx]
-        grads = tape.gradient(class_channel, conv_outputs)
+            grad_model = keras.models.Model(func_model.inputs, [target_layer.output, func_model.output])
+            with tf.GradientTape() as tape:
+                conv_outputs, predictions = grad_model(img_array)
+                class_idx = ops.argmax(predictions[0])
+                class_channel = predictions[:, class_idx]
+            grads = tape.gradient(class_channel, conv_outputs)
         
     elif backend == "torch":
         import torch

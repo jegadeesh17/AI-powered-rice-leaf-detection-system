@@ -8,15 +8,19 @@ import time
 import sqlite3
 import pandas as pd
 
-# Ensure src directory is in path for absolute importing
-sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+# Ensure project root is in path for absolute importing
+project_root = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+sys.path.insert(0, project_root)
 
 import keras
 import numpy as np
 import cv2
 import matplotlib.cm as cm
 from PIL import Image, ImageDraw
-from interpretability import make_gradcam_heatmap
+import importlib
+import src.interpretability
+importlib.reload(src.interpretability)
+from src.interpretability import make_gradcam_heatmap
 
 # ==========================================
 # PAGE CONFIGURATION
@@ -272,7 +276,7 @@ def load_rice_model():
     model_path = os.path.join(os.path.dirname(__file__), "../models/rice_ai_best.keras")
     if not os.path.exists(model_path):
         model_path = os.path.join(os.path.dirname(__file__), "rice_leaf_disease_model.keras")
-    return keras.models.load_model(model_path)
+    return keras.models.load_model(model_path, compile=False)
 
 # ==========================================
 # SIDEBAR CONTROLS & CONFIGURATION
