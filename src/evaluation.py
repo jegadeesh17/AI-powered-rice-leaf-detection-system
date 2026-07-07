@@ -16,8 +16,8 @@ def plot_confusion_matrix(y_true, y_pred, classes, save_path=None):
     if save_path:
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
         plt.savefig(save_path, bbox_inches='tight')
-        print(f"✅ Visualization saved to: {save_path}")
-    plt.show()
+        print(f"Visualization saved to: {save_path}")
+    plt.close()
 
 def plot_training_history(history, save_path=None):
     """Plots and saves the accuracy and loss curves."""
@@ -42,5 +42,5 @@ def plot_training_history(history, save_path=None):
     if save_path:
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
         plt.savefig(save_path, bbox_inches='tight')
-        print(f"✅ Visualization saved to: {save_path}")
-    plt.show()
+        print(f"Visualization saved to: {save_path}")
+    plt.close()

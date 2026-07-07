@@ -1,4 +1,20 @@
-# AI-Powered Rice Leaf Disease Detection System
+# Rice Leaf Disease Detection
+
+Precision agriculture CV system — EfficientNetB0 classification with Grad-CAM explainability, FastAPI inference, and Streamlit diagnostics.
+
+## Quickstart
+
+```bash
+pip install -r requirements.txt
+python src/train.py --demo
+pytest tests/ -q
+uvicorn api.main:app --reload --port 8000
+streamlit run app/app.py
+```
+
+Use `--demo` for a fast run on seeded minimal data when the Mendeley dataset is not yet downloaded. For production training, place images under `data/processed/rice_leaf_split/` and run `python src/train.py` (batch size ≤16 on 4GB VRAM).
+
+See `reports/evaluation.md` and `docs/DEMO.md` for interview walkthrough.
 
 ---
 
@@ -29,12 +45,12 @@ The system leverages convolutional neural networks (CNNs), image preprocessing p
 * **Coverage:** Multi-class disease leaf image samples
 * **Data Type:** Labeled RGB rice leaf images
 
-#### **Disease Categories**
+#### **Disease Categories (4 classes)**
 
-* Bacterial Leaf Blight
-* Brown Spot
-* Leaf Smut
-* Healthy Rice Leaves
+* Bacterial Leaf Blight (`Bacterialblight`)
+* Rice Blast (`Blast`)
+* Brown Spot (`Brownspot`)
+* Rice Tungro Disease (`Tungro`)
 
 #### **Key Features Analyzed**
 
