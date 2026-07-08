@@ -6,6 +6,7 @@
 
 ```bash
 pip install -r requirements.txt
+pip install -r requirements-api.txt
 pip install py7zr
 python scripts/download_and_split_dataset.py --replace
 python src/train.py

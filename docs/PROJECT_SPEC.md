@@ -144,6 +144,7 @@ Returns model load status.
 
 ```powershell
 pip install -r requirements.txt
+pip install -r requirements-api.txt
 python src/train.py --demo
 pytest tests/ -q
 uvicorn api.main:app --port 8000

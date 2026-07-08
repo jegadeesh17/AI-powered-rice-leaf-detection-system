@@ -169,6 +169,7 @@ cd RiceLeafDetection
 
 ```bash
 pip install -r requirements.txt
+pip install -r requirements-api.txt  # needed only for FastAPI endpoint
 ```
 
 ---
