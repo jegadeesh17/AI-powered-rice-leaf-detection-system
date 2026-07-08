@@ -26,6 +26,7 @@ import importlib
 import src.interpretability
 importlib.reload(src.interpretability)
 from src.interpretability import make_gradcam_heatmap
+from src.inference import CLASSES, DISPLAY_NAMES, IMG_SIZE, model_path, predict_image, preprocess_image
 
 # ==========================================
 # PAGE CONFIGURATION
@@ -214,15 +215,8 @@ init_db()
 # ==========================================
 # GLOBAL CONSTANTS & HELPERS
 # ==========================================
-classes = ["Bacterialblight", "Blast", "Brownspot", "Tungro"]
-IMG_SIZE = 224
-
-class_display_names = {
-    "Bacterialblight": "Bacterial Leaf Blight",
-    "Blast": "Rice Blast",
-    "Brownspot": "Brown Spot",
-    "Tungro": "Rice Tungro Disease"
-}
+classes = CLASSES
+class_display_names = DISPLAY_NAMES
 
 # Treatment Guides Storage mapped cleanly
 treatment_protocols = {
@@ -262,12 +256,6 @@ def generate_mock_leaf(disease_type):
             
     return img
 
-def preprocess_image(image):
-    image = image.convert("RGB")
-    image = image.resize((IMG_SIZE, IMG_SIZE))
-    image = np.array(image)
-    return np.expand_dims(image, axis=0)
-
 def overlay_heatmap(image, heatmap, alpha=0.4):
     img = np.array(image.resize((IMG_SIZE, IMG_SIZE)))
     heatmap_scaled = np.uint8(255 * heatmap)
@@ -304,10 +292,13 @@ Generated via AI Diagnostics Pipeline
 # ==========================================
 @st.cache_resource(show_spinner=False)
 def load_rice_model():
-    model_path = os.path.join(os.path.dirname(__file__), "../models/ai_system_rice_leaf_final.keras")
-    if not os.path.exists(model_path):
-        model_path = os.path.join(os.path.dirname(__file__), "rice_leaf_disease_model.keras")
-    return keras.models.load_model(model_path, compile=False)
+    target_model = model_path(project_root)
+    if not os.path.exists(target_model):
+        raise FileNotFoundError(
+            f"Missing source-of-truth model artifact: {target_model}. "
+            "Regenerate from notebook/train pipeline before launching the app."
+        )
+    return keras.models.load_model(target_model, compile=False)
 
 # ==========================================
 # SIDEBAR CONTROLS & CONFIGURATION
@@ -357,7 +348,7 @@ elif input_mode == "Use Sample Asset" and selected_sample is not None:
 history_snapshot = fetch_run_history()
 latest_latency_text, latency_p95_text = load_latency_snapshot(history_snapshot)
 latest_accuracy_text = load_latest_test_accuracy()
-storage_driver_text = f"Embedded SQLite ({os.path.basename(DB_PATH)})"
+storage_driver_text = f"Embedded SQLite "
 
 # ==========================================
 # MAIN TABBED WORKFLOW ORCHESTRATION
@@ -411,13 +402,12 @@ with tab_diag:
             
             # Execute inference
             start_t = time.time()
-            img_tensor = preprocess_image(active_image)
-            preds = model.predict(img_tensor, verbose=0)[0]
+            prediction = predict_image(model, active_image)
+            preds = np.array([prediction["probabilities"][cls] for cls in classes], dtype=np.float32)
             inf_time = (time.time() - start_t) * 1000
             
-            pred_idx = np.argmax(preds)
-            top_class = classes[pred_idx]
-            top_conf = preds[pred_idx]
+            top_class = prediction["disease_class"]
+            top_conf = float(prediction["confidence"])
             
             # Trigger Database Storage persistence silently
             log_inference_run(input_mode, top_class, top_conf, inf_time)
@@ -489,6 +479,7 @@ with tab_xai:
         with xc1:
             with st.spinner("Resolving spatial activation vectors..."):
                 try:
+                    img_tensor = preprocess_image(active_image)
                     heatmap = make_gradcam_heatmap(img_tensor, model)
                     overlay = overlay_heatmap(active_image, heatmap, alpha=heatmap_alpha)
                     st.image(overlay, caption=f"Grad-CAM Attention Focus (Alpha: {heatmap_alpha})", use_container_width=True)

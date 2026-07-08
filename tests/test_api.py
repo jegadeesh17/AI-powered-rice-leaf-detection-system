@@ -53,3 +53,63 @@ def test_predict_invalid_type(client):
         files={"file": ("leaf.txt", b"not-an-image", "text/plain")},
     )
     assert response.status_code == 422
+
+
+def test_predict_invalid_image_bytes(client):
+    response = client.post(
+        "/predict",
+        files={"file": ("leaf.png", b"not-an-image", "image/png")},
+    )
+    assert response.status_code == 400
+    assert "Invalid image" in response.json()["detail"]
+
+
+def test_predict_missing_model_returns_503():
+    from api.main import app
+
+    with patch("api.main._load_model", side_effect=FileNotFoundError("missing model")):
+        test_client = TestClient(app)
+        response = test_client.post(
+            "/predict",
+            files={"file": ("leaf.png", _fake_image_bytes(), "image/png")},
+        )
+    assert response.status_code == 503
+    assert "missing model" in response.json()["detail"]
+
+
+def test_health_model_loaded_flag():
+    from api.main import app
+
+    with patch("api.main.model_path", return_value="fake-model.keras"), patch(
+        "api.main.os.path.exists", return_value=True
+    ):
+        test_client = TestClient(app)
+        response = test_client.get("/health")
+    assert response.status_code == 200
+    assert response.json()["model_loaded"] is True
+
+    with patch("api.main.model_path", return_value="fake-model.keras"), patch(
+        "api.main.os.path.exists", return_value=False
+    ):
+        test_client = TestClient(app)
+        response = test_client.get("/health")
+    assert response.status_code == 200
+    assert response.json()["model_loaded"] is False
+
+
+def test_load_model_uses_cached_instance():
+    import api.main as main
+
+    fake_model = MagicMock()
+    main._model = None
+    try:
+        with patch("api.main.model_path", return_value="fake-model.keras"), patch(
+            "api.main.os.path.exists", return_value=True
+        ), patch("api.main.keras.models.load_model", return_value=fake_model) as mocked_load:
+            m1 = main._load_model()
+            m2 = main._load_model()
+        assert m1 is fake_model
+        assert m2 is fake_model
+        assert mocked_load.call_count == 1
+    finally:
+        main._model = None
