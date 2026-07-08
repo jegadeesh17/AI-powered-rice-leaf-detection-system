@@ -21,7 +21,7 @@ import keras
 import numpy as np
 import cv2
 import matplotlib.cm as cm
-from PIL import Image, ImageDraw
+from PIL import Image
 import importlib
 import src.interpretability
 importlib.reload(src.interpretability)
@@ -35,7 +35,7 @@ st.set_page_config(
     page_title="Rice AI Diagnostics Platform",
     page_icon="🌾",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 # ==========================================
@@ -124,6 +124,11 @@ st.markdown("""
         border-bottom: 3px solid #1e3c72;
         background-color: #f8fafc;
         border-radius: 6px 6px 0 0;
+    }
+
+    /* Remove the left sidebar completely per product UX */
+    section[data-testid="stSidebar"] {
+        display: none !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -234,39 +239,28 @@ treatment_protocols = {
 * Synchronous Planting: Enforce strict regional resting windows between crop plantings to break the local hopper lifecycle."""
 }
 
-def generate_mock_leaf(disease_type):
-    """Generates standalone visual leaf mockups for user demonstration."""
-    base_color = (50, 140, 60) if disease_type != "Tungro" else (190, 160, 40)
-    img = Image.new("RGB", (IMG_SIZE, IMG_SIZE), color=base_color)
-    draw = ImageDraw.Draw(img)
-    
-    # Draw central leaf vein
-    draw.line([(112, 0), (112, IMG_SIZE)], fill=(30, 110, 45), width=5)
-    
-    if disease_type == "Bacterialblight":
-        draw.rectangle([(0, 0), (35, 224)], fill=(210, 210, 150))
-        draw.rectangle([(189, 0), (224, 224)], fill=(210, 210, 150))
-    elif disease_type == "Blast":
-        for x, y in [(60, 50), (150, 130), (85, 175)]:
-            draw.ellipse([(x-18, y-10), (x+18, y+10)], fill=(130, 80, 60))
-            draw.ellipse([(x-12, y-5), (x+12, y+5)], fill=(200, 200, 200))
-    elif disease_type == "Brownspot":
-        for x, y in [(40, 30), (170, 45), (100, 85), (145, 155), (55, 140), (160, 195)]:
-            draw.ellipse([(x-8, y-8), (x+8, y+8)], fill=(90, 45, 25))
-            
-    return img
-
 def overlay_heatmap(image, heatmap, alpha=0.4):
-    img = np.array(image.resize((IMG_SIZE, IMG_SIZE)))
-    heatmap_scaled = np.uint8(255 * heatmap)
-    
+    # Force RGB for robust blending (some image sources can be RGBA).
+    img = np.array(image.convert("RGB").resize((IMG_SIZE, IMG_SIZE)))
+
+    # Grad-CAM helpers may return 2D, RGB, or RGBA arrays; reduce to a single map.
+    heatmap_arr = np.array(heatmap)
+    if heatmap_arr.ndim == 3:
+        heatmap_arr = heatmap_arr[..., 0]
+
+    heatmap_arr = np.clip(heatmap_arr, 0.0, 1.0)
+    heatmap_scaled = np.uint8(255 * heatmap_arr)
+
     jet = cm.get_cmap("jet") if hasattr(cm, "get_cmap") else cm.jet
     jet_colors = jet(np.arange(256))[:, :3]
     jet_heatmap = jet_colors[heatmap_scaled]
-    
     jet_heatmap = cv2.resize(jet_heatmap, (img.shape[1], img.shape[0]))
     jet_heatmap = np.uint8(255 * jet_heatmap)
-    
+
+    # Safety guard in case an RGBA colormap slips through.
+    if jet_heatmap.ndim == 3 and jet_heatmap.shape[2] == 4:
+        jet_heatmap = jet_heatmap[:, :, :3]
+
     superimposed_img = jet_heatmap * alpha + img
     return superimposed_img.astype("uint8")
 
@@ -301,34 +295,12 @@ def load_rice_model():
     return keras.models.load_model(target_model, compile=False)
 
 # ==========================================
-# SIDEBAR CONTROLS & CONFIGURATION
+# ENGINE THRESHOLDS (FIXED; NO SIDEBAR UI)
 # ==========================================
-with st.sidebar:
-    st.markdown("### ⚙️ Engine Parameters")
-    conf_threshold = st.slider("Confidence Threshold", min_value=0.50, max_value=0.99, value=0.70, step=0.05)
-    heatmap_alpha = st.slider("Heatmap Overlay Opacity", min_value=0.1, max_value=0.9, value=0.45, step=0.05)
-    
-    st.divider()
-    
-    st.markdown("### 📥 Source Ingestion Mode")
-    input_mode = st.radio("Select Image Source:", ["Upload Local Leaf Image", "Use Sample Asset"], index=0)
-    
-    uploaded_file = None
-    selected_sample = None
-    
-    if input_mode == "Upload Local Leaf Image":
-        uploaded_file = st.file_uploader("Upload clear leaf capture", type=["jpg", "jpeg", "png"])
-    else:
-        selected_sample = st.selectbox("Choose a synthetic reference mockup:", classes, 
-                                       format_func=lambda x: class_display_names[x])
-        
-    st.divider()
-    st.markdown("""
-        **System Telemetry:**
-        * Engine: `Keras 3` + `PyTorch`
-        * DB Persistence: `SQLite Embedded`
-        * Document Generation: `In-Memory Buffer`
-    """)
+conf_threshold = 0.70
+heatmap_alpha = 0.45
+input_mode = "Upload Local Leaf Image"
+uploaded_file = None
 
 # Load inference model securely
 try:
@@ -340,10 +312,6 @@ except Exception as e:
 
 # Resolve source image object
 active_image = None
-if input_mode == "Upload Local Leaf Image" and uploaded_file is not None:
-    active_image = Image.open(uploaded_file)
-elif input_mode == "Use Sample Asset" and selected_sample is not None:
-    active_image = generate_mock_leaf(selected_sample)
 
 history_snapshot = fetch_run_history()
 latest_latency_text, latency_p95_text = load_latency_snapshot(history_snapshot)
@@ -370,8 +338,14 @@ inf_time = 0.0
 # TAB 1: REAL-TIME DIAGNOSTICS
 # ------------------------------------------
 with tab_diag:
+    st.markdown("### 📥 Source Ingestion Mode")
+    uploaded_file = st.file_uploader("Upload clear leaf capture", type=["jpg", "jpeg", "png"])
+
+    if uploaded_file is not None:
+        active_image = Image.open(uploaded_file)
+
     if active_image is None:
-        st.info("👈 Please upload a crop image or select a sample reference using the Sidebar menu to begin evaluation.")
+        st.info("👆 Please upload a crop image above to begin evaluation.")
         
         col_p1, col_p2, col_p3 = st.columns(3)
         with col_p1:
