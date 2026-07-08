@@ -1,28 +1,13 @@
 # Rice Leaf Disease Detection
-
-Precision agriculture CV system — EfficientNetB0 classification with Grad-CAM explainability, FastAPI inference, and Streamlit diagnostics.
-
-## Quickstart
-
-```bash
-pip install -r requirements.txt
-python src/train.py --demo
-pytest tests/ -q
-uvicorn api.main:app --reload --port 8000
-streamlit run app/app.py
-```
-
-Use `--demo` for a fast run on seeded minimal data when the Mendeley dataset is not yet downloaded. For production training, place images under `data/processed/rice_leaf_split/` and run `python src/train.py` (batch size ≤16 on 4GB VRAM).
-
-See `reports/evaluation.md` and `docs/DEMO.md` for interview walkthrough.
-
 ---
-
 ### **Project Overview**
 
 Rice crops are highly vulnerable to leaf diseases that significantly reduce agricultural productivity and crop quality. This project builds an AI-powered rice leaf disease detection system using deep learning and computer vision techniques to automatically identify and classify rice leaf diseases from image data.
 
 The system leverages convolutional neural networks (CNNs), image preprocessing pipelines, and deep learning-based classification models to analyze rice leaf images and predict disease categories with high accuracy. The project aims to support precision agriculture and assist farmers in early disease diagnosis for better crop management.
+
+**Repository:** [github.com/jegadeesh17/RiceLeafDetection](https://github.com/jegadeesh17/RiceLeafDetection)  
+**Full specification:** [docs/PROJECT_SPEC.md](docs/PROJECT_SPEC.md)
 
 ---
 
@@ -146,10 +131,12 @@ The system integrates Grad-CAM (Gradient-weighted Class Activation Mapping) to p
 
 The project features an interactive **Streamlit Web Application** designed with clean UI aesthetics, enabling users to upload leaf images and run real-time classification.
 
-#### **To Launch the Platform Locally:**
 ```powershell
 streamlit run app/app.py
+uvicorn api.main:app --reload --port 8000
 ```
+
+See `reports/evaluation.md` and `docs/DEMO.md` for interview walkthrough.
 
 ---
 
@@ -172,8 +159,7 @@ streamlit run app/app.py
 ### **1. Clone Repository**
 
 ```bash
-git clone https://github.com/yourusername/Rice-Leaf-Disease-Diagnostic-AI-System.git
-
+git clone https://github.com/jegadeesh17/RiceLeafDetection.git
 cd RiceLeafDetection
 ```
 
@@ -190,26 +176,18 @@ pip install -r requirements.txt
 ### **3. Launch Notebook**
 
 ```bash
-jupyter notebook
+jupyter notebook "notebooks/AI system for rice leaf.ipynb"
 ```
 
-Open:
+### **4. Launch Dashboard**
 
 ```bash
-rice_leaf_ai_system.ipynb
+python src/train.py --demo
+pytest tests/ -q
+streamlit run app/app.py
 ```
 
----
-
-### **4. Train the Model**
-
-```python
-model.fit(
-    train_generator,
-    validation_data=validation_generator,
-    epochs=20
-)
-```
+Use `--demo` for a fast run on seeded minimal data. For production training, place images under `data/processed/rice_leaf_split/` and run `python src/train.py` (batch size ≤16 on 4GB VRAM).
 
 ---
 
