@@ -1,17 +1,17 @@
 # Rice Leaf Disease Detection — Evaluation Report
 
-## Test Accuracy: 1.0
+## Test Accuracy: 0.9866 (98.66%)
 
 ## Per-Class Metrics
 | Class | Precision | Recall | F1 |
 |-------|-----------|--------|-----|
-| Bacterialblight | 1.0 | 1.0 | 1.0 |
-| Blast | 1.0 | 1.0 | 1.0 |
-| Brownspot | 1.0 | 1.0 | 1.0 |
-| Tungro | 1.0 | 1.0 | 1.0 |
+| Bacterialblight | 0.9793388429752066 | 0.9916317991631799 | 0.9854469854469855 |
+| Blast | 0.9904306220095693 | 0.9539170506912442 | 0.971830985915493 |
+| Brownspot | 0.9836065573770492 | 1.0 | 0.9917355371900827 |
+| Tungro | 0.9949494949494949 | 1.0 | 0.9974683544303797 |
 
 ## Artifacts
-- Confusion matrix: `docs/confusion_matrix.png`
+- Confusion matrix: `visualizations/confusion_matrix.png`
 - Model: `models/ai_system_rice_leaf_final.keras`
 
 ## Notes

@@ -20,10 +20,18 @@ def get_augmentation_layer():
     )
 
 
-class _DirectoryDataset:
-    """Lightweight image directory loader without TensorFlow dependency."""
+class _DirectoryDataset(keras.utils.PyDataset):
+    """Image directory loader compatible with Keras 3 ``model.fit`` (torch backend)."""
 
-    def __init__(self, root: str, image_size: int = 224, batch_size: int = 8, shuffle: bool = True):
+    def __init__(
+        self,
+        root: str,
+        image_size: int = 224,
+        batch_size: int = 8,
+        shuffle: bool = True,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
         self.image_size = image_size
         self.batch_size = batch_size
         self.shuffle = shuffle
@@ -37,28 +45,35 @@ class _DirectoryDataset:
             for fname in os.listdir(class_dir):
                 if fname.lower().endswith((".png", ".jpg", ".jpeg")):
                     self.samples.append((os.path.join(class_dir, fname), self.class_to_idx[class_name]))
+        self._indices = np.arange(len(self.samples))
+        if self.shuffle:
+            np.random.shuffle(self._indices)
 
     def __len__(self) -> int:
-        return max(1, int(np.ceil(len(self.samples) / self.batch_size)))
+        if not self.samples:
+            return 0
+        return int(np.ceil(len(self.samples) / self.batch_size))
 
-    def _batch_indices(self):
-        indices = np.arange(len(self.samples))
+    def __getitem__(self, idx: int):
+        if idx >= len(self):
+            raise IndexError(f"Batch index {idx} out of range for {len(self)} batches")
+        start = idx * self.batch_size
+        end = min(start + self.batch_size, len(self.samples))
+        batch_indices = self._indices[start:end]
+
+        images, labels = [], []
+        for sample_idx in batch_indices:
+            path, label = self.samples[int(sample_idx)]
+            img = Image.open(path).convert("RGB").resize((self.image_size, self.image_size))
+            images.append(np.array(img, dtype=np.float32))
+            one_hot = np.zeros(len(self.class_names), dtype=np.float32)
+            one_hot[label] = 1.0
+            labels.append(one_hot)
+        return np.stack(images), np.stack(labels)
+
+    def on_epoch_end(self):
         if self.shuffle:
-            np.random.shuffle(indices)
-        for start in range(0, len(indices), self.batch_size):
-            yield indices[start : start + self.batch_size]
-
-    def __iter__(self):
-        for batch_idx in self._batch_indices():
-            images, labels = [], []
-            for idx in batch_idx:
-                path, label = self.samples[idx]
-                img = Image.open(path).convert("RGB").resize((self.image_size, self.image_size))
-                images.append(np.array(img, dtype=np.float32))
-                one_hot = np.zeros(len(self.class_names), dtype=np.float32)
-                one_hot[label] = 1.0
-                labels.append(one_hot)
-            yield np.stack(images), np.stack(labels)
+            np.random.shuffle(self._indices)
 
 
 def load_datasets(train_path, val_path, test_path, img_size=224, batch_size=8):

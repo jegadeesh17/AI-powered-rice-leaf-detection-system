@@ -32,17 +32,58 @@ SPLIT_ROOT = os.path.join(ROOT, "data", "processed", "rice_leaf_split")
 MODEL_DIR = os.path.join(ROOT, "models")
 FINAL_MODEL = os.path.join(MODEL_DIR, "ai_system_rice_leaf_final.keras")
 METRICS_JSON = os.path.join(ROOT, "reports", "metrics.json")
-CM_PATH = os.path.join(ROOT, "docs", "confusion_matrix.png")
+CM_PATH = os.path.join(ROOT, "visualizations", "confusion_matrix.png")
 IMG_SIZE = 224
 
 
-def _ensure_data() -> None:
+def _count_split_images() -> int:
     train_path = os.path.join(SPLIT_ROOT, "train")
-    if os.path.isdir(train_path) and os.listdir(train_path):
-        return
-    from scripts.seed_demo_data import main as seed_main
+    if not os.path.isdir(train_path):
+        return 0
+    total = 0
+    for root, _dirs, files in os.walk(train_path):
+        total += sum(1 for f in files if f.lower().endswith((".png", ".jpg", ".jpeg")))
+    return total
 
-    seed_main()
+
+def _looks_like_demo_data() -> bool:
+    """Detect seed_demo_data.py artifacts (Class_split_N.png naming / tiny set)."""
+    if _count_split_images() == 0:
+        return False
+    for root, _dirs, files in os.walk(SPLIT_ROOT):
+        for name in files:
+            if name.endswith("_train_0.png") or name.endswith("_val_0.png"):
+                return True
+    return _count_split_images() < 200
+
+
+def _ensure_data(*, allow_demo: bool = False) -> None:
+    image_count = _count_split_images()
+    is_demo = _looks_like_demo_data() if image_count > 0 else False
+
+    if image_count > 0:
+        if is_demo and not allow_demo:
+            raise SystemExit(
+                "Found demo/fake images under data/processed/rice_leaf_split/.\n"
+                "Download the real Mendeley dataset first:\n"
+                "  python scripts/download_and_split_dataset.py --replace\n"
+                "Or pass --demo only if you intentionally want the toy seed."
+            )
+        return
+
+    if allow_demo:
+        from scripts.seed_demo_data import main as seed_main
+
+        seed_main()
+        return
+
+    raise SystemExit(
+        "No training images found under data/processed/rice_leaf_split/.\n"
+        "Download + split the real dataset:\n"
+        "  pip install py7zr\n"
+        "  python scripts/download_and_split_dataset.py --replace\n"
+        "Or for a quick synthetic smoke test: python src/train.py --demo"
+    )
 
 
 def _load_split(split: str) -> tuple[np.ndarray, np.ndarray, list[str]]:
@@ -58,11 +99,13 @@ def _load_split(split: str) -> tuple[np.ndarray, np.ndarray, list[str]]:
                 img = Image.open(path).convert("RGB").resize((IMG_SIZE, IMG_SIZE))
                 images.append(np.array(img, dtype=np.float32))
                 labels.append(label)
+    if not images:
+        raise SystemExit(f"No images found in {root}. Run scripts/download_and_split_dataset.py first.")
     return np.stack(images), to_categorical(labels, num_classes=len(class_names)), class_names
 
 
-def train(epochs: int = 5, batch_size: int = 8, fine_tune_epochs: int = 3) -> dict:
-    _ensure_data()
+def train(epochs: int = 5, batch_size: int = 8, fine_tune_epochs: int = 3, *, allow_demo: bool = False) -> dict:
+    _ensure_data(allow_demo=allow_demo)
     os.makedirs(MODEL_DIR, exist_ok=True)
     os.makedirs(os.path.dirname(CM_PATH), exist_ok=True)
     os.makedirs(os.path.dirname(METRICS_JSON), exist_ok=True)
@@ -137,4 +180,9 @@ if __name__ == "__main__":
     if args.demo:
         args.epochs = 2
         args.fine_tune_epochs = 1
-    train(epochs=args.epochs, batch_size=args.batch_size, fine_tune_epochs=args.fine_tune_epochs)
+    train(
+        epochs=args.epochs,
+        batch_size=args.batch_size,
+        fine_tune_epochs=args.fine_tune_epochs,
+        allow_demo=args.demo,
+    )

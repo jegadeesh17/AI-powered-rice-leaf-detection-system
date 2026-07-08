@@ -59,7 +59,7 @@ Rice Leaf Disease Detection is a **computer vision classification system** for p
 | FR-02 | Train EfficientNetB0 classifier | `src/train.py` | ✅ |
 | FR-03 | Save Keras model artifact | `models/` | ✅ |
 | FR-04 | Image inference | `src/inference.py` | ✅ |
-| FR-05 | Grad-CAM visualization | `src/gradcam.py` | ✅ |
+| FR-05 | Grad-CAM visualization | `src/interpretability.py` | ✅ |
 | FR-06 | REST image API | `api/main.py` | ✅ |
 | FR-07 | Streamlit upload UI | `app/app.py` | ✅ |
 
@@ -86,7 +86,7 @@ train.py (augmentation, EfficientNetB0)
 models/ai_system_rice_leaf_final.keras
         │
         ├── inference.py ──▶ api/main.py (POST /predict)
-        └── gradcam.py ──▶ app/app.py (heatmap overlay)
+        └── interpretability.py ──▶ app/app.py (heatmap overlay)
 ```
 
 ---
@@ -104,11 +104,11 @@ models/ai_system_rice_leaf_final.keras
 
 ## 6. Models & Metrics
 
-| Metric | Demo run | Notes |
+| Metric | Current run | Notes |
 |--------|----------|-------|
-| Test accuracy | 1.0 | On minimal `--demo` data — disclose in interviews |
-| Per-class F1 | 1.0 all classes | Full Mendeley training gives realistic metrics |
-| Artifact | `docs/confusion_matrix.png` | Generated on train |
+| Test accuracy | 0.9866 (98.66%) | Final model + full test split |
+| Per-class F1 | 0.9718–0.9975 | Strongest: Tungro, Brownspot |
+| Artifact | `visualizations/confusion_matrix.png` | Generated during evaluation |
 
 Regenerate: `python src/train.py` → `reports/evaluation.md`
 
@@ -126,9 +126,9 @@ Returns model load status.
 **Output:**
 ```json
 {
-  "predicted_class": "Blast",
+  "disease_class": "Blast",
   "confidence": 0.94,
-  "all_probabilities": { ... }
+  "probabilities": { ... }
 }
 ```
 
@@ -136,7 +136,7 @@ Returns model load status.
 
 ## 8. Grad-CAM Explainability
 
-`src/gradcam.py` computes gradient-weighted class activation maps over the final conv layer. Streamlit overlays the heatmap on the uploaded leaf image for analyst trust.
+`src/interpretability.py` computes gradient-weighted class activation maps over the final conv layer. Streamlit overlays the heatmap on the uploaded leaf image for analyst trust.
 
 ---
 
@@ -150,7 +150,8 @@ uvicorn api.main:app --port 8000
 streamlit run app/app.py
 ```
 
-**Production training:** Download Mendeley dataset → place under `data/processed/rice_leaf_split/` → `python src/train.py`
+**Production training:** `pip install py7zr` → `python scripts/download_and_split_dataset.py --replace` → `python src/train.py`  
+See [data/DATA_SETUP.md](../data/DATA_SETUP.md).
 
 ---
 
@@ -166,7 +167,7 @@ streamlit run app/app.py
 |------|---------|
 | `src/train.py` | Training CLI with `--demo` |
 | `src/inference.py` | Load model + predict |
-| `src/gradcam.py` | Explainability heatmaps |
+| `src/interpretability.py` | Explainability heatmaps |
 | `api/main.py` | FastAPI service |
 | `app/app.py` | Streamlit diagnostics |
 | `notebooks/AI system for rice leaf.ipynb` | Notebook source of truth |

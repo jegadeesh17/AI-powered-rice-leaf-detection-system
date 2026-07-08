@@ -10,6 +10,7 @@ import streamlit as st
 import sys
 import time
 import sqlite3
+import json
 import pandas as pd
 
 # Ensure project root is in path for absolute importing
@@ -181,6 +182,32 @@ def fetch_run_history():
     except Exception:
         return pd.DataFrame()
 
+
+def load_latest_test_accuracy():
+    """Read latest exported test accuracy from reports/metrics.json."""
+    metrics_path = os.path.join(os.path.dirname(__file__), "../reports/metrics.json")
+    try:
+        with open(metrics_path, "r", encoding="utf-8") as f:
+            payload = json.load(f)
+        score = payload.get("test_accuracy")
+        if score is None:
+            return "N/A"
+        return f"{float(score) * 100:.1f}%"
+    except Exception:
+        return "N/A"
+
+
+def load_latency_snapshot(df_logs: pd.DataFrame):
+    """Return latest latency and p95 latency display strings."""
+    if df_logs.empty or "latency_ms" not in df_logs.columns:
+        return "N/A", "N/A"
+    latencies = pd.to_numeric(df_logs["latency_ms"], errors="coerce").dropna()
+    if latencies.empty:
+        return "N/A", "N/A"
+    latest_ms = float(latencies.iloc[0])
+    p95_ms = float(latencies.quantile(0.95))
+    return f"{latest_ms:.0f} ms", f"{p95_ms:.0f} ms"
+
 # Initialize localized SQL infrastructure globally
 init_db()
 
@@ -327,6 +354,11 @@ if input_mode == "Upload Local Leaf Image" and uploaded_file is not None:
 elif input_mode == "Use Sample Asset" and selected_sample is not None:
     active_image = generate_mock_leaf(selected_sample)
 
+history_snapshot = fetch_run_history()
+latest_latency_text, latency_p95_text = load_latency_snapshot(history_snapshot)
+latest_accuracy_text = load_latest_test_accuracy()
+storage_driver_text = f"Embedded SQLite ({os.path.basename(DB_PATH)})"
+
 # ==========================================
 # MAIN TABBED WORKFLOW ORCHESTRATION
 # ==========================================
@@ -352,18 +384,27 @@ with tab_diag:
         
         col_p1, col_p2, col_p3 = st.columns(3)
         with col_p1:
-            st.markdown("<div class='status-card info'><div class='status-label'>Speed Optimization</div><div class='status-value'>&lt; 150ms</div></div>", unsafe_allow_html=True)
+            st.markdown(
+                f"<div class='status-card info'><div class='status-label'>Latest Latency (P95)</div><div class='status-value'>{latency_p95_text}</div></div>",
+                unsafe_allow_html=True,
+            )
         with col_p2:
-            st.markdown("<div class='status-card safe'><div class='status-label'>Target Accuracy</div><div class='status-value'>95.4%</div></div>", unsafe_allow_html=True)
+            st.markdown(
+                f"<div class='status-card safe'><div class='status-label'>Latest Test Accuracy</div><div class='status-value'>{latest_accuracy_text}</div></div>",
+                unsafe_allow_html=True,
+            )
         with col_p3:
-            st.markdown("<div class='status-card warning'><div class='status-label'>Storage Driver</div><div class='status-value'>Embedded SQLite</div></div>", unsafe_allow_html=True)
+            st.markdown(
+                f"<div class='status-card warning'><div class='status-label'>Storage Driver</div><div class='status-value'>{storage_driver_text}</div></div>",
+                unsafe_allow_html=True,
+            )
             
     else:
         col_img, col_res = st.columns([1, 1.3], gap="large")
         
         with col_img:
             st.markdown("#### 🌿 Input Specimen")
-            st.image(active_image, caption="Analyzed Field Specimen Capture", width="stretch")
+            st.image(active_image, caption="Analyzed Field Specimen Capture", use_container_width=True)
             
         with col_res:
             st.markdown("#### 🔬 Diagnostic Engine Report")
@@ -417,7 +458,6 @@ with tab_diag:
                 data=report_data,
                 file_name=f"Diagnostic_Report_{top_class}.txt",
                 mime="text/plain",
-                width="stretch"
             )
             st.caption("💡 Report generation operates entirely in-memory using buffer allocation streaming directly to your web browser.")
 
@@ -451,10 +491,10 @@ with tab_xai:
                 try:
                     heatmap = make_gradcam_heatmap(img_tensor, model)
                     overlay = overlay_heatmap(active_image, heatmap, alpha=heatmap_alpha)
-                    st.image(overlay, caption=f"Grad-CAM Attention Focus (Alpha: {heatmap_alpha})", width="stretch")
+                    st.image(overlay, caption=f"Grad-CAM Attention Focus (Alpha: {heatmap_alpha})", use_container_width=True)
                 except Exception as ge:
                     st.warning(f"Grad-CAM integration fallback triggered. Details: {ge}")
-                    st.image(active_image, caption="Base Image Fallback", width="stretch")
+                    st.image(active_image, caption="Base Image Fallback", use_container_width=True)
                     
         with xc2:
             st.markdown("#### 📊 Probability Density Distribution")
@@ -486,7 +526,7 @@ with tab_history:
             st.metric("Most Frequent Pathogen", class_display_names.get(top_pathogen, top_pathogen))
             
         st.divider()
-        st.dataframe(df_logs, width="stretch", hide_index=True)
+        st.dataframe(df_logs, use_container_width=True, hide_index=True)
         
         st.caption("📌 Local storage files completely eliminate complex maintenance loops. Your data remains perfectly intact even upon terminating application servers.")
 

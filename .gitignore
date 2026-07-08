@@ -20,6 +20,7 @@ events.out.tfevents.*
 # Data & Large Files
 data/
 !data/.gitkeep
+!data/DATA_SETUP.md
 *.zip
 *.tar.gz
 *.csv

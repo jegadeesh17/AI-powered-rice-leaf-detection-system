@@ -20,7 +20,7 @@ def main(metrics: dict | None = None) -> None:
     lines = [
         "# Rice Leaf Disease Detection — Evaluation Report",
         "",
-        f"## Test Accuracy: {metrics['test_accuracy']}",
+        f"## Test Accuracy: {metrics['test_accuracy']:.4f} ({metrics['test_accuracy']*100:.2f}%)",
         "",
         "## Per-Class Metrics",
         "| Class | Precision | Recall | F1 |",
@@ -34,7 +34,7 @@ def main(metrics: dict | None = None) -> None:
         [
             "",
             "## Artifacts",
-            "- Confusion matrix: `docs/confusion_matrix.png`",
+            "- Confusion matrix: `visualizations/confusion_matrix.png`",
             f"- Model: `models/ai_system_rice_leaf_final.keras`",
             "",
             "## Notes",

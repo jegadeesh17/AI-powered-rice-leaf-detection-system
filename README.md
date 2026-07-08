@@ -120,7 +120,7 @@ The system integrates Grad-CAM (Gradient-weighted Class Activation Mapping) to p
 
 | Metric    | Score  |
 | --------- | ------ |
-| Accuracy  | 95%+   |
+| Accuracy  | 98.66% |
 | Precision | High   |
 | Recall    | High   |
 | F1-Score  | Strong |
@@ -145,7 +145,7 @@ See `reports/evaluation.md` and `docs/DEMO.md` for interview walkthrough.
 | Category             | Tools                     |
 | -------------------- | ------------------------- |
 | Programming          | Python                    |
-| Deep Learning        | TensorFlow, Keras         |
+| Deep Learning        | Keras 3 + PyTorch backend |
 | Data Processing      | NumPy, Pandas             |
 | Visualization        | Matplotlib, Seaborn       |
 | Image Processing     | OpenCV                    |
@@ -179,15 +179,26 @@ pip install -r requirements.txt
 jupyter notebook "notebooks/AI system for rice leaf.ipynb"
 ```
 
-### **4. Launch Dashboard**
+### **4. Dataset Setup & Training**
 
 ```bash
+# Real Mendeley data (recommended)
+pip install py7zr
+python scripts/download_and_split_dataset.py --replace
+python src/train.py
+
+# Optional: tiny synthetic smoke test only
 python src/train.py --demo
+```
+
+Full details: [data/DATA_SETUP.md](data/DATA_SETUP.md). Dashboard:
+
+```bash
 pytest tests/ -q
 streamlit run app/app.py
 ```
 
-Use `--demo` for a fast run on seeded minimal data. For production training, place images under `data/processed/rice_leaf_split/` and run `python src/train.py` (batch size ≤16 on 4GB VRAM).
+Use `python src/train.py` after the real split is in `data/processed/rice_leaf_split/` (batch size ≤16 on 4GB VRAM). `--demo` is toy data only.
 
 ---
 

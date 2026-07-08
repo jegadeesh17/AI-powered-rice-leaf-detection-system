@@ -6,11 +6,15 @@
 
 ```bash
 pip install -r requirements.txt
-python src/train.py --demo
+pip install py7zr
+python scripts/download_and_split_dataset.py --replace
+python src/train.py
 pytest tests/ -q
 ```
 
-For full Mendeley dataset training, place images under `data/processed/rice_leaf_split/{train,val,test}/` then run `python src/train.py`.
+See [data/DATA_SETUP.md](../data/DATA_SETUP.md). For a fast synthetic smoke test only: `python src/train.py --demo`.
+
+If you already downloaded the Mendeley `.7z` manually, use `python scripts/download_and_split_dataset.py --from-archive path\to\file.7z --replace`.
 
 ## 1. Evaluation (1 min)
 
@@ -18,7 +22,7 @@ For full Mendeley dataset training, place images under `data/processed/rice_leaf
 type reports\evaluation.md
 ```
 
-Highlight per-class precision/recall and `docs/confusion_matrix.png`.
+Highlight per-class precision/recall and `visualizations/confusion_matrix.png`.
 
 ## 2. FastAPI (2 min)
 
