@@ -53,3 +53,13 @@ streamlit run app/app.py
 - [ ] `pytest tests/ -q` passes
 - [ ] API `/health` returns `model_loaded: true`
 - [ ] Grad-CAM renders on XAI tab
+
+## 4. Cloud demo (optional, 1 min)
+
+If deployed (see [DEPLOY.md](DEPLOY.md)):
+
+- **Streamlit Cloud:** open your live app (`app/app.py`) — same flow as section 3
+- **Cloud Run API:** https://rice-leaf-api-5obmkzpuaa-el.a.run.app/docs — upload via Swagger
+- **Health check:** `curl https://rice-leaf-api-5obmkzpuaa-el.a.run.app/health`
+
+**Interview pitch:** Streamlit for full diagnostics + explainability; Cloud Run for programmatic inference and Swagger.

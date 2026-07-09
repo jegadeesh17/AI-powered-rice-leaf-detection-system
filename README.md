@@ -6,7 +6,7 @@ Rice crops are highly vulnerable to leaf diseases that significantly reduce agri
 
 The system leverages convolutional neural networks (CNNs), image preprocessing pipelines, and deep learning-based classification models to analyze rice leaf images and predict disease categories with high accuracy. The project aims to support precision agriculture and assist farmers in early disease diagnosis for better crop management.
 
-**Repository:** [github.com/jegadeesh17/RiceLeafDetection](https://github.com/jegadeesh17/RiceLeafDetection)  
+**Repository:** [github.com/jegadeesh17/AI-powered-rice-leaf-detection-system](https://github.com/jegadeesh17/AI-powered-rice-leaf-detection-system)  
 **Full specification:** [docs/PROJECT_SPEC.md](docs/PROJECT_SPEC.md)
 
 ---
@@ -144,8 +144,8 @@ See `reports/evaluation.md` and `docs/DEMO.md` for interview walkthrough.
 ### **1. Clone Repository**
 
 ```bash
-git clone https://github.com/jegadeesh17/RiceLeafDetection.git
-cd RiceLeafDetection
+git clone https://github.com/jegadeesh17/AI-powered-rice-leaf-detection-system.git
+cd AI-powered-rice-leaf-detection-system
 ```
 
 ---
@@ -206,19 +206,20 @@ A smart agriculture platform can use this system to:
 
 ---
 
-### **Cloud Deployment (Free Tier)**
+### **Cloud Deployment (Free Tier)** — live
 
-Deploy the UI and API at zero cost using Streamlit Cloud, Hugging Face Hub, and GCP Cloud Run.
+| Surface | Link |
+|---------|------|
+| **Streamlit dashboard** | Deployed on Streamlit Cloud (`app/app.py`) — full UI with Grad-CAM |
+| **Inference API** | https://rice-leaf-api-5obmkzpuaa-el.a.run.app |
+| **API docs** | https://rice-leaf-api-5obmkzpuaa-el.a.run.app/docs |
+| **Model artifacts** | https://huggingface.co/jegadeesh17/rice-leaf-disease-model |
 
-**Full guide:** [docs/DEPLOY.md](docs/DEPLOY.md)  
-**Master walkthrough (both projects):** [../DEPLOY_GUIDE.md](../DEPLOY_GUIDE.md)
+**Local run:** `streamlit run app/app.py` (same UI as cloud; model from `models/` or HF).
 
-Quick summary:
+**Guides:** [docs/DEPLOY.md](docs/DEPLOY.md) · [../DEPLOY_GUIDE.md](../DEPLOY_GUIDE.md)
 
-1. `python scripts/upload_model_to_hf.py --repo-id YOUR_USERNAME/rice-leaf-disease-model`
-2. **Streamlit demo:** Streamlit Cloud → `app/app.py` with `HF_MODEL_REPO` secret (full UI + Grad-CAM)
-3. **API + web UI:** Cloud Run → root URL `/` for browser upload; `/docs` for Swagger
-4. GitHub Actions → **Deploy API to Cloud Run** (after GCP secrets are set)
+**Stack:** EfficientNetB0 · FastAPI · GCP Cloud Run · Hugging Face Hub · Streamlit Cloud · GitHub Actions
 
 ---
 
