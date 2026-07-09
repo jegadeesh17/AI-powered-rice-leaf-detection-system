@@ -35,6 +35,16 @@ def test_health(client):
     assert response.json()["status"] == "ok"
 
 
+def test_web_ui_returns_html():
+    from api.main import app
+
+    test_client = TestClient(app)
+    response = test_client.get("/")
+    assert response.status_code == 200
+    assert "Rice Leaf Disease" in response.text
+    assert "/predict" in response.text
+
+
 def test_predict_schema(client):
     response = client.post(
         "/predict",

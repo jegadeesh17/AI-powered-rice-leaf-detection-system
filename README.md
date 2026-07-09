@@ -216,8 +216,10 @@ Deploy the UI and API at zero cost using Streamlit Cloud, Hugging Face Hub, and 
 Quick summary:
 
 1. `python scripts/upload_model_to_hf.py --repo-id YOUR_USERNAME/rice-leaf-disease-model`
-2. Streamlit Cloud → `app/app.py` with `HF_MODEL_REPO` secret
-3. GitHub Actions → **Deploy API to Cloud Run** (after GCP secrets are set)
+2. **Full local UI:** `streamlit run app/app.py` (Grad-CAM, SQLite — local model)
+3. **API-backed cloud UI:** Streamlit Cloud → `app/cloud_client.py` with `API_BASE_URL` secret
+4. **API with built-in web UI:** Cloud Run root URL `/` (browser upload → `POST /predict`)
+5. GitHub Actions → **Deploy API to Cloud Run** (after GCP secrets are set)
 
 ---
 

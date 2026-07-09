@@ -1,0 +1,5 @@
+# Lightweight deps for app/cloud_client.py (API-backed Streamlit deploy)
+streamlit>=1.32.0
+httpx>=0.28.0
+pillow>=10.0.0
+python-dotenv>=1.0.0

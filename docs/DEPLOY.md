@@ -20,7 +20,7 @@ Zero-cost stack:
 
 ```bash
 pip install huggingface_hub
-huggingface-cli login
+hf auth login
 
 python scripts/upload_model_to_hf.py --repo-id YOUR_USERNAME/rice-leaf-disease-model
 ```
@@ -113,3 +113,32 @@ docker run -p 8080:8080 -e HF_MODEL_REPO=YOUR_USERNAME/rice-leaf-disease-model r
 - Streamlit Cloud: free for public repos
 - Hugging Face Hub: free for public models
 - Cloud Run free tier: ~2M requests/month — more than enough for portfolio demos
+
+## Three ways to use the UI (pick your story)
+
+| App | Entry point | Model source | Best for |
+|-----|-------------|--------------|----------|
+| **Full local UI** | `streamlit run app/app.py` | Local / LFS / HF | Grad-CAM, SQLite, interviews on your laptop |
+| **API client UI** | Streamlit Cloud → `app/cloud_client.py` | Cloud Run `/predict` | Shows microservices: UI calls REST API |
+| **Built-in API UI** | Cloud Run root `/` | Same Cloud Run service | One URL — API with a browser "head" |
+
+### API client Streamlit (`app/cloud_client.py`)
+
+1. Streamlit Cloud → main file: `app/cloud_client.py`
+2. Secrets:
+
+```toml
+API_BASE_URL = "https://rice-leaf-api-5obmkzpuaa-el.a.run.app"
+```
+
+3. Optional: use `requirements-cloud.txt` for faster installs (Streamlit advanced settings or swap on a deploy branch).
+
+### Built-in web UI on Cloud Run
+
+After redeploying the API, open:
+
+```
+https://rice-leaf-api-5obmkzpuaa-el.a.run.app/
+```
+
+Upload an image in the browser — it calls `POST /predict` on the same service.
