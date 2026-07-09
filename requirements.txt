@@ -25,3 +25,4 @@ jupyter
 ipython
 py7zr
 python-dotenv
+huggingface_hub>=0.23.0

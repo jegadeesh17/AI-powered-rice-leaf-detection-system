@@ -20,7 +20,10 @@ MODEL_FILENAME = "ai_system_rice_leaf_final.keras"
 
 def model_path(root: str | None = None) -> str:
     base = root or os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    return os.path.join(base, "models", MODEL_FILENAME)
+    path = os.path.join(base, "models", MODEL_FILENAME)
+    from src.model_assets import ensure_model_file
+
+    return ensure_model_file(path)
 
 
 def preprocess_image(image: Image.Image) -> np.ndarray:

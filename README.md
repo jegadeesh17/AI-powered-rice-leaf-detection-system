@@ -202,8 +202,22 @@ A smart agriculture platform can use this system to:
 ### **Future Improvements**
 
 * Mobile app deployment for farmers
-* Cloud-based agricultural monitoring dashboard
 * Integration with fertilizer and treatment recommendation systems
+
+---
+
+### **Cloud Deployment (Free Tier)**
+
+Deploy the UI and API at zero cost using Streamlit Cloud, Hugging Face Hub, and GCP Cloud Run.
+
+**Full guide:** [docs/DEPLOY.md](docs/DEPLOY.md)  
+**Master walkthrough (both projects):** [../DEPLOY_GUIDE.md](../DEPLOY_GUIDE.md)
+
+Quick summary:
+
+1. `python scripts/upload_model_to_hf.py --repo-id YOUR_USERNAME/rice-leaf-disease-model`
+2. Streamlit Cloud → `app/app.py` with `HF_MODEL_REPO` secret
+3. GitHub Actions → **Deploy API to Cloud Run** (after GCP secrets are set)
 
 ---
 
