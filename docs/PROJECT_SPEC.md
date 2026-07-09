@@ -10,7 +10,7 @@
 | **Version** | 1.0 |
 | **Status** | Active |
 | **Last updated** | 2026-07-08 |
-| **Repository** | [github.com/jegadeesh17/AI-powered-rice-leaf-detection-system](https://github.com/jegadeesh17/AI-powered-rice-leaf-detection-system) |
+| **Repository** | [github.com/jegadeesh17/RiceLeafDetection](https://github.com/jegadeesh17/RiceLeafDetection) |
 | **Related docs** | [README.md](../README.md), [DEMO.md](./DEMO.md), [reports/evaluation.md](../reports/evaluation.md) |
 
 ---
@@ -31,7 +31,7 @@ Rice Leaf Disease Detection is a **computer vision classification system** for p
 
 | # | Capability |
 |---|------------|
-| 1 | Image preprocessing and augmentation |
+| 1 | Image preprocessing (resize + normalize) |
 | 2 | EfficientNetB0 transfer learning (freeze → fine-tune) |
 | 3 | One-command training script with `--demo` mode |
 | 4 | Confusion matrix and evaluation report export |

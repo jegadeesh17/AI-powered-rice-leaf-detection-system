@@ -14,12 +14,12 @@ The system leverages convolutional neural networks (CNNs), image preprocessing p
 ### **Key Features**
 
 * **AI-Based Disease Detection:** Detects and classifies rice leaf diseases using deep learning models.
-* **Image Preprocessing Pipeline:** Performs resizing, normalization, and augmentation for robust model training.
+* **Image Preprocessing Pipeline:** Performs resizing and normalization for robust model training.
 * **Deep Learning Classification:** Uses CNN-based architectures for multiclass disease prediction.
 * **Automated Feature Learning:** Extracts disease patterns directly from rice leaf images.
 * **Model Evaluation & Analytics:** Tracks model accuracy, loss, precision, recall, and confusion matrices.
 * **Interactive Streamlit Web App:** Deployed application for uploading images and getting real-time predictions.
-* **Transfer Learning Architectures:** Supports advanced models like MobileNetV2 and EfficientNetB0 for high accuracy.
+* **Transfer Learning Architecture:** Uses EfficientNetB0 transfer learning for high accuracy.
 * **Model Explainability (Grad-CAM):** Visualizes the regions of interest in the leaf that triggered the disease prediction.
 
 ---
@@ -74,7 +74,7 @@ RiceLeafDetection/
 * Normalizes pixel values for stable training
 * Performs train-validation-test splitting
 
-The system applies data augmentation techniques to improve model generalization:
+The training pipeline uses deterministic resize/normalize preprocessing. Augmentation helpers are available for future experiments:
 
 | Augmentation Technique | Purpose                           |
 | ---------------------- | --------------------------------- |
@@ -88,22 +88,7 @@ The system applies data augmentation techniques to improve model generalization:
 
 ### **2. Deep Learning Architecture**
 
-Uses convolutional neural networks (CNNs) and transfer learning models for automated disease classification.
-
-```python
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
-
-model = Sequential([
-    Conv2D(32, (3,3), activation='relu', input_shape=(224, 224, 3)),
-    MaxPooling2D(2,2),
-    Conv2D(64, (3,3), activation='relu'),
-    MaxPooling2D(2,2),
-    Flatten(),
-    Dense(128, activation='relu'),
-    Dense(num_classes, activation='softmax')
-])
-```
+Uses transfer learning with **EfficientNetB0** followed by fine-tuning for multiclass disease classification.
 
 ---
 
