@@ -23,7 +23,9 @@ def _fake_image_bytes() -> bytes:
 def client():
     mock_model = MagicMock()
     mock_model.predict.return_value = [np.array([0.1, 0.7, 0.1, 0.1])]
-    with patch("api.main._load_model", return_value=mock_model):
+    fake_heatmap = np.random.rand(7, 7).astype(np.float32)
+    with patch("api.main._load_model", return_value=mock_model), \
+         patch("api.main.make_gradcam_heatmap", return_value=fake_heatmap):
         from api.main import app
 
         yield TestClient(app)
