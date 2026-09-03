@@ -172,6 +172,23 @@ def web_ui() -> str:
       overflow-x: hidden;
     }
 
+    /* Fixed backdrop: fine dot grid for texture plus a soft wash under the
+       header. Sits on z-index 0; .appbar (50) and .container (1) stay above. */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle at 1px 1px, rgba(15, 23, 42, 0.055) 1px, transparent 0),
+        linear-gradient(180deg, rgba(16, 185, 129, 0.10) 0%, rgba(16, 185, 129, 0.02) 45%, rgba(16, 185, 129, 0) 100%);
+      background-size: 22px 22px, 100% 520px;
+      background-repeat: repeat, no-repeat;
+      -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, rgba(0,0,0,0.35) 100%);
+      mask-image: linear-gradient(180deg, #000 0%, #000 55%, rgba(0,0,0,0.35) 100%);
+    }
+
     /* ── Icons ── */
     .ico {
       width: 1em; height: 1em;
@@ -206,6 +223,7 @@ def web_ui() -> str:
       align-self: stretch;
       width: auto;
       background: rgba(255, 255, 255, 0.85);
+      -webkit-backdrop-filter: saturate(180%) blur(12px);
       backdrop-filter: saturate(180%) blur(12px);
       border-bottom: 1px solid var(--border);
       margin: -1.5rem -1rem 1.5rem;
@@ -323,7 +341,7 @@ def web_ui() -> str:
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 1.75rem;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+      box-shadow: 0 10px 34px rgba(15, 23, 42, 0.06), 0 2px 6px rgba(15, 23, 42, 0.03);
       margin-bottom: 1.25rem;
       transition: border-color 0.3s, box-shadow 0.3s;
     }
@@ -955,7 +973,7 @@ def web_ui() -> str:
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 1.15rem 1.75rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+      box-shadow: 0 6px 22px rgba(15, 23, 42, 0.05);
     }
     .links-title {
       font-size: 0.76rem;
