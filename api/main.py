@@ -119,6 +119,8 @@ def web_ui() -> str:
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Rice Leaf Disease Detection — AI-powered plant health analysis using deep learning on Cloud Run." />
   <title>Rice Leaf Disease Detection | AI Diagnostic Platform</title>
+  <meta name="theme-color" content="#059669" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23059669'/%3E%3Cpath d='M15 24c-4 0-7-3-7-7 0-5 4-8 12-9 0 9-2 14-8 16z' fill='none' stroke='%23fff' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M11 26c0-4 2-7 5-9' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -165,29 +167,105 @@ def web_ui() -> str:
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 2rem 1rem 3.5rem;
+      padding: 1.5rem 1rem 3.5rem;
       position: relative;
       overflow-x: hidden;
     }
 
-    /* Ambient background glows (soft emerald & mint) */
-    body::before, body::after {
-      content: '';
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(90px);
-      pointer-events: none;
-      z-index: 0;
+    /* ── Icons ── */
+    .ico {
+      width: 1em; height: 1em;
+      flex: none;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vertical-align: -0.125em;
     }
-    body::before {
-      width: 550px; height: 550px;
-      background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
-      top: -120px; left: -100px;
+    .ico-lg { width: 1.5em; height: 1.5em; }
+
+    /* contextual icon sizing */
+    .brand-mark .ico { width: 17px; height: 17px; }
+    .drop-icon-wrap .ico { width: 24px; height: 24px; stroke-width: 1.75; color: var(--accent); }
+    #btn .ico { width: 18px; height: 18px; vertical-align: -0.2em; margin-right: 0.15rem; }
+    .h-badge .ico { width: 13px; height: 13px; }
+    .mode-pill { display: inline-flex; align-items: center; gap: 0.35rem; }
+    .mode-pill .ico { width: 14px; height: 14px; }
+    .section-heading .ico { width: 15px; height: 15px; }
+    .prob-info .ico { width: 13px; height: 13px; color: var(--accent); }
+    .close-modal .ico { width: 16px; height: 16px; }
+
+    /* ── Application bar ── */
+    .appbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      /* body centres its flex items, so stretch to go full-bleed
+         before the negative margins cancel the body padding */
+      align-self: stretch;
+      width: auto;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: saturate(180%) blur(12px);
+      border-bottom: 1px solid var(--border);
+      margin: -1.5rem -1rem 1.5rem;
+      padding: 0 1rem;
     }
-    body::after {
-      width: 480px; height: 480px;
-      background: radial-gradient(circle, rgba(5, 150, 105, 0.07) 0%, transparent 70%);
-      bottom: -100px; right: -80px;
+    .appbar-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      min-width: 0;
+    }
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: #ffffff;
+      flex: none;
+    }
+    .brand-mark .ico { stroke-width: 2.2; }
+    .brand-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .appbar-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex: none;
+    }
+    .meta-pill {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--muted);
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .meta-pill.accent {
+      color: #065f46;
+      background: #ecfdf5;
+      border-color: #a7f3d0;
     }
 
     .container {
@@ -204,38 +282,14 @@ def web_ui() -> str:
     /* ── Header ── */
     .header {
       text-align: center;
-      margin-bottom: 1.75rem;
-    }
-    .header-icon-wrap {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 68px; height: 68px;
-      background: #ecfdf5;
-      border: 1px solid #d1fae5;
-      border-radius: 20px;
-      margin-bottom: 0.85rem;
-      box-shadow: 0 4px 16px rgba(5, 150, 105, 0.12);
-    }
-    .header-icon {
-      font-size: 2.2rem;
-      display: block;
-      filter: drop-shadow(0 2px 8px rgba(16, 185, 129, 0.3));
+      margin-bottom: 1.5rem;
     }
     .header h1 {
-      font-size: 1.95rem;
-      font-weight: 800;
-      letter-spacing: -0.035em;
-      color: #065f46;
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text);
       margin-bottom: 0.35rem;
-    }
-    @supports ((background-clip: text) or (-webkit-background-clip: text)) {
-      .header h1 {
-        background: linear-gradient(135deg, #065f46 0%, #059669 50%, #10b981 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
     }
     .header p {
       font-size: 0.92rem;
@@ -253,7 +307,7 @@ def web_ui() -> str:
     .h-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.4rem;
       font-size: 0.75rem;
       font-weight: 600;
       color: #065f46;
@@ -307,7 +361,6 @@ def web_ui() -> str:
       border-radius: 14px;
       border: 1px solid #d1fae5;
     }
-    .drop-icon { font-size: 1.8rem; }
     .drop-title {
       font-size: 1rem;
       font-weight: 600;
@@ -642,6 +695,8 @@ def web_ui() -> str:
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
+    .spin { animation: spin 1s linear infinite; transform-origin: center; }
 
     .hint {
       font-size: 0.78rem;
@@ -1074,6 +1129,12 @@ def web_ui() -> str:
     @media (max-width: 520px) {
       body { padding: 1.25rem 0.75rem 2.5rem; }
 
+      /* keep the bar's negative margins matched to the body padding */
+      .appbar { margin: -1.25rem -0.75rem 1.25rem; padding: 0 0.75rem; }
+      .appbar-inner { height: 52px; }
+      .brand-name { font-size: 0.88rem; }
+      .appbar-meta .meta-pill:first-child { display: none; }
+
       .header h1 { font-size: 1.55rem; }
       .header p { font-size: 0.86rem; }
 
@@ -1101,19 +1162,56 @@ def web_ui() -> str:
   </style>
 </head>
 <body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M11 20a7 7 0 0 1-1.2-13.9C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.4 5.1-6"/></symbol>
+      <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></symbol>
+      <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></symbol>
+      <symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/></symbol>
+      <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></symbol>
+      <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5-5 5 5"/><path d="M12 5v12"/></symbol>
+      <symbol id="i-folder" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9L9.6 3.9A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
+      <symbol id="i-camera" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3Z"/><circle cx="12" cy="13" r="3"/></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+      <symbol id="i-columns" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18"/></symbol>
+      <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3"/><circle cx="12" cy="4" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="14" cy="20" r="2"/></symbol>
+      <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.6-4.6a2 2 0 0 0-2.8 0L4 21"/></symbol>
+      <symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+      <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></symbol>
+      <symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.7-6L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.7 6L3 16"/><path d="M3 21v-5h5"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+      <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v5h5"/><path d="M16 13H8M16 17H8"/></symbol>
+      <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6"/><path d="M10 3v6l-5 11a1 1 0 0 0 .9 1.5h12.2A1 1 0 0 0 19 20l-5-11V3"/><path d="M7.5 15h9"/></symbol>
+      <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 21V11"/><path d="M12 11c0-3.3 2.2-5 5.5-5 0 3.3-2.2 5-5.5 5Z"/><path d="M12 14c0-3.3-2.2-5-5.5-5 0 3.3 2.2 5 5.5 5Z"/><path d="M7 21h10"/></symbol>
+      <symbol id="i-spinner" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9" /></symbol>
+    </defs>
+  </svg>
+
+  <header class="appbar">
+    <div class="appbar-inner">
+      <div class="brand">
+        <span class="brand-mark"><svg class="ico"><use href="#i-leaf"/></svg></span>
+        <span class="brand-name">Rice Leaf Diagnostics</span>
+      </div>
+      <div class="appbar-meta">
+        <span class="meta-pill">EfficientNetB0</span>
+        <span class="meta-pill accent">v1.0</span>
+      </div>
+    </div>
+  </header>
   <div class="container" id="main-container">
     <!-- Header -->
     <div class="header">
-      <div class="header-icon-wrap">
-        <span class="header-icon">🌾</span>
-      </div>
       <h1>Rice Leaf Disease Detection</h1>
       <p>AI-powered agricultural diagnostic intelligence — Instant classification with Grad-CAM spatial explainability.</p>
       <div class="header-badges">
-        <span class="h-badge">🌿 4 Disease Classes</span>
-        <span class="h-badge">🧠 EfficientNetB0</span>
-        <span class="h-badge">🔬 Grad-CAM Attention</span>
-        <span class="h-badge">⚡ Real-Time API</span>
+        <span class="h-badge"><svg class="ico"><use href="#i-layers"/></svg> 4 Disease Classes</span>
+        <span class="h-badge"><svg class="ico"><use href="#i-cpu"/></svg> EfficientNetB0</span>
+        <span class="h-badge"><svg class="ico"><use href="#i-scan"/></svg> Grad-CAM Attention</span>
+        <span class="h-badge"><svg class="ico"><use href="#i-zap"/></svg> Real-Time API</span>
       </div>
     </div>
 
@@ -1123,7 +1221,7 @@ def web_ui() -> str:
       <div class="drop-zone" id="drop-zone">
         <input type="file" id="file" accept="image/jpeg,image/png,image/jpg" />
         <div class="drop-icon-wrap">
-          <span class="drop-icon">🍃</span>
+          <svg class="ico ico-lg"><use href="#i-upload"/></svg>
         </div>
         <div class="drop-title">Drop a rice leaf image here, or click to browse</div>
         <div class="drop-sub">Supports JPEG &amp; PNG • High resolution leaf specimen recommended</div>
@@ -1132,10 +1230,10 @@ def web_ui() -> str:
       <!-- Quick Action Buttons -->
       <div class="input-actions-bar">
         <button class="action-chip-btn" id="browse-btn">
-          📁 Browse Files
+          <svg class="ico"><use href="#i-folder"/></svg> Browse Files
         </button>
         <button class="action-chip-btn" id="camera-btn">
-          📷 Take Photo
+          <svg class="ico"><use href="#i-camera"/></svg> Take Photo
         </button>
         <input type="file" id="camera-file" accept="image/*" capture="environment" style="display:none;" />
       </div>
@@ -1143,24 +1241,24 @@ def web_ui() -> str:
       <!-- Quick Test Samples Selector -->
       <div class="samples-wrap" id="samples-wrap">
         <div class="samples-title">
-          <span>🌿 Or Try a Verified Specimen:</span>
+          <span>Or try a verified specimen</span>
           <span style="font-size:0.7rem; color:var(--muted); font-weight:500;">1-Click Demo</span>
         </div>
         <div class="samples-grid">
           <button class="sample-btn" data-class="Bacterialblight">
-            <span class="sample-btn-name">🍂 Bacterial Blight</span>
+            <span class="sample-btn-name">Bacterial Blight</span>
             <span class="sample-btn-type">Bacterial • Streaks</span>
           </button>
           <button class="sample-btn" data-class="Blast">
-            <span class="sample-btn-name">🌾 Rice Blast</span>
+            <span class="sample-btn-name">Rice Blast</span>
             <span class="sample-btn-type">Fungal • Spindles</span>
           </button>
           <button class="sample-btn" data-class="Brownspot">
-            <span class="sample-btn-name">🍁 Brown Spot</span>
+            <span class="sample-btn-name">Brown Spot</span>
             <span class="sample-btn-type">Fungal • Lesions</span>
           </button>
           <button class="sample-btn" data-class="Tungro">
-            <span class="sample-btn-name">🍂 Tungro Disease</span>
+            <span class="sample-btn-name">Tungro Disease</span>
             <span class="sample-btn-type">Viral • Yellowing</span>
           </button>
         </div>
@@ -1173,15 +1271,15 @@ def web_ui() -> str:
             <span class="file-badge" id="file-name">Specimen</span>
             <span style="font-size:0.75rem; color:var(--muted);" id="file-size"></span>
           </div>
-          <button class="clear-btn" id="clear-btn">✕ Clear</button>
+          <button class="clear-btn" id="clear-btn"><svg class="ico"><use href="#i-x"/></svg> Clear</button>
         </div>
 
         <!-- Post-inference mode switchers -->
         <div class="view-modes-bar" id="view-modes-bar">
-          <button class="mode-pill active" data-mode="side">🖼️ Side-by-Side</button>
-          <button class="mode-pill" data-mode="slider">🔀 Opacity Slider</button>
-          <button class="mode-pill" data-mode="original">🍃 Specimen Only</button>
-          <button class="mode-pill" data-mode="gradcam">🧠 Heatmap Only</button>
+          <button class="mode-pill active" data-mode="side"><svg class="ico"><use href="#i-columns"/></svg> Side-by-Side</button>
+          <button class="mode-pill" data-mode="slider"><svg class="ico"><use href="#i-sliders"/></svg> Opacity Slider</button>
+          <button class="mode-pill" data-mode="original"><svg class="ico"><use href="#i-image"/></svg> Specimen Only</button>
+          <button class="mode-pill" data-mode="gradcam"><svg class="ico"><use href="#i-activity"/></svg> Heatmap Only</button>
         </div>
 
         <!-- Visual Stage -->
@@ -1212,19 +1310,19 @@ def web_ui() -> str:
       </div>
 
       <!-- Primary Action Button -->
-      <button id="btn" disabled>⚡ Analyze Specimen via API</button>
+      <button id="btn" disabled><svg class="ico"><use href="#i-zap"/></svg> Analyze Specimen</button>
 
       <!-- Multi-step progress tracker -->
       <div class="progress-tracker" id="progress-tracker">
         <div class="progress-step-text" id="progress-step-text">
-          <span style="display:inline-block; animation:spin 1s linear infinite;">⏳</span> Ingesting &amp; preprocessing specimen...
+          <svg class="ico spin"><use href="#i-spinner"/></svg> Ingesting &amp; preprocessing specimen...
         </div>
         <div class="pulse-bar">
           <div class="pulse-fill"></div>
         </div>
       </div>
 
-      <p class="hint" id="idle-hint">⏱ Cold starts on Cloud Run may take 1–2 min when waking from idle.</p>
+      <p class="hint" id="idle-hint">The first request after a period of inactivity may take longer while the service scales up.</p>
 
       <!-- Dynamic Diagnostic Results -->
       <div id="result"></div>
@@ -1234,15 +1332,15 @@ def web_ui() -> str:
     <div class="links-card">
       <div class="links-title">System Endpoints &amp; Telemetry</div>
       <div class="links-row">
-        <a class="link-pill" href="/docs">📄 Swagger UI</a>
-        <a class="link-pill" href="/health">💚 API Health</a>
-        <button class="link-pill" id="open-modal">📊 View Telemetry</button>
+        <a class="link-pill" href="/docs"><svg class="ico"><use href="#i-file"/></svg> API Reference</a>
+        <a class="link-pill" href="/health"><svg class="ico"><use href="#i-activity"/></svg> Service Health</a>
+        <button class="link-pill" id="open-modal"><svg class="ico"><use href="#i-chart"/></svg> Telemetry</button>
       </div>
     </div>
 
     <!-- Footer -->
     <div class="footer">
-      🌾 Institutional Rice Leaf Disease Diagnostic Pipeline • Engineered with Keras 3 &amp; PyTorch Engine
+      Rice Leaf Diagnostics • EfficientNetB0 transfer learning • Keras 3 on PyTorch
     </div>
   </div>
 
@@ -1250,8 +1348,8 @@ def web_ui() -> str:
   <div class="telemetry-modal" id="tel-modal">
     <div class="telemetry-content">
       <div class="telemetry-header">
-        <h2>📊 Diagnostic Telemetry &amp; Execution Logs</h2>
-        <button class="close-modal" id="close-modal">✕</button>
+        <h2><svg class="ico"><use href="#i-chart"/></svg> Diagnostic Telemetry</h2>
+        <button class="close-modal" id="close-modal"><svg class="ico"><use href="#i-x"/></svg></button>
       </div>
 
       <div class="kpi-row">
@@ -1608,7 +1706,7 @@ Explainability Engine: Spatial Grad-CAM Layer Mapping
     btn.addEventListener('click', async () => {
       if (!selectedFile) return;
       btn.disabled = true;
-      btn.innerHTML = '⚡ Running Deep Neural Analysis…';
+      btn.innerHTML = '<svg class="ico spin"><use href="#i-spinner"/></svg> Analyzing…';
       progressTracker.style.display = 'block';
       idleHint.style.display = 'block';
       result.innerHTML = '';
@@ -1622,7 +1720,7 @@ Explainability Engine: Spatial Grad-CAM Layer Mapping
       let stepIdx = 0;
       const stepTimer = setInterval(() => {
         stepIdx = (stepIdx + 1) % steps.length;
-        progressStepText.innerHTML = `<span style="display:inline-block; animation:spin 1s linear infinite;">⏳</span> ${steps[stepIdx]}`;
+        progressStepText.innerHTML = `<svg class="ico spin"><use href="#i-spinner"/></svg> ${steps[stepIdx]}`;
       }, 1500);
 
       const form = new FormData();
@@ -1665,7 +1763,7 @@ Explainability Engine: Spatial Grad-CAM Layer Mapping
           barsHtml += `
             <div class="prob-item ${isTop ? 'is-top' : ''}">
               <div class="prob-info">
-                <span>${isTop ? '✓ ' : ''}${pDisp}</span>
+                <span>${isTop ? '<svg class="ico"><use href="#i-check"/></svg> ' : ''}${pDisp}</span>
                 <span class="prob-pct">${(pVal * 100).toFixed(1)}%</span>
               </div>
               <div class="bar-bg">
@@ -1679,7 +1777,7 @@ Explainability Engine: Spatial Grad-CAM Layer Mapping
         if (data.confidence < 0.70) {
           lowConfHtml = `
             <div class="low-conf-alert">
-              <span>⚠️</span>
+              <span><svg class="ico"><use href="#i-alert"/></svg></span>
               <div>Diagnostic Certainty is below 70%. Ensure the leaf is well-lit and focused, or re-examine for secondary pathogens.</div>
             </div>`;
         }
@@ -1702,24 +1800,24 @@ Explainability Engine: Spatial Grad-CAM Layer Mapping
 
           <!-- Probability Distribution -->
           <div class="prob-section">
-            <div class="section-heading">📊 Multiclass Confidence Distribution</div>
+            <div class="section-heading"><svg class="ico"><use href="#i-chart"/></svg> Confidence Distribution</div>
             ${barsHtml}
           </div>
 
           <!-- Structured Agronomic Treatment Cards -->
           <div class="treatment-container">
-            <div class="section-heading">🌾 Prescriptive Field Countermeasures</div>
+            <div class="section-heading"><svg class="ico"><use href="#i-sprout"/></svg> Recommended Countermeasures</div>
             <div class="treatment-grid">
               <div class="action-card">
-                <div class="action-card-title">⚡ Immediate Intervention</div>
+                <div class="action-card-title"><svg class="ico"><use href="#i-zap"/></svg> Immediate Intervention</div>
                 <div class="action-card-text">${prot.immediate}</div>
               </div>
               <div class="action-card">
-                <div class="action-card-title">🧪 Targeted Chemical Protocol</div>
+                <div class="action-card-title"><svg class="ico"><use href="#i-flask"/></svg> Targeted Chemical Protocol</div>
                 <div class="action-card-text">${prot.chemical}</div>
               </div>
               <div class="action-card">
-                <div class="action-card-title">🌱 Soil &amp; Cultural Regimes</div>
+                <div class="action-card-title"><svg class="ico"><use href="#i-sprout"/></svg> Soil &amp; Cultural Regimes</div>
                 <div class="action-card-text">${prot.cultural}</div>
               </div>
             </div>
@@ -1728,13 +1826,13 @@ Explainability Engine: Spatial Grad-CAM Layer Mapping
           <!-- Action Buttons Bar -->
           <div class="result-actions-bar">
             <button class="result-action-btn" onclick="downloadReport()">
-              📥 Download Printable Report (.txt)
+              <svg class="ico"><use href="#i-download"/></svg> Download Report
             </button>
             <button class="result-action-btn secondary" onclick="copySummary()">
-              📋 Copy Summary
+              <svg class="ico"><use href="#i-clipboard"/></svg> Copy Summary
             </button>
             <button class="result-action-btn secondary" onclick="resetAnalysis()">
-              🔄 Analyze Another Leaf
+              <svg class="ico"><use href="#i-refresh"/></svg> Analyze Another
             </button>
           </div>
 
@@ -1761,11 +1859,11 @@ Explainability Engine: Spatial Grad-CAM Layer Mapping
         clearInterval(stepTimer);
         result.innerHTML = `
           <div style="padding:1rem; border-radius:10px; background:var(--critical-bg); border:1px solid var(--critical-border); color:#b91c1c; font-size:0.88rem;">
-            ⚠️ <b>Analysis Error:</b> ${err.message}
+            <svg class="ico"><use href="#i-alert"/></svg> <b>Analysis Error:</b> ${err.message}
           </div>`;
       } finally {
         btn.disabled = false;
-        btn.innerHTML = '⚡ Analyze Specimen via API';
+        btn.innerHTML = '<svg class="ico"><use href="#i-zap"/></svg> Analyze Specimen';
         progressTracker.style.display = 'none';
       }
     });
