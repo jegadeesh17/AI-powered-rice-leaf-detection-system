@@ -126,6 +126,7 @@ def web_ui() -> str:
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
+      color-scheme: light;
       --bg: #f8fafc;
       --surface: #ffffff;
       --surface-card: #f8fafc;
@@ -225,11 +226,16 @@ def web_ui() -> str:
       font-size: 1.95rem;
       font-weight: 800;
       letter-spacing: -0.035em;
-      background: linear-gradient(135deg, #065f46 0%, #059669 50%, #10b981 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #065f46;
       margin-bottom: 0.35rem;
+    }
+    @supports ((background-clip: text) or (-webkit-background-clip: text)) {
+      .header h1 {
+        background: linear-gradient(135deg, #065f46 0%, #059669 50%, #10b981 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
     }
     .header p {
       font-size: 0.92rem;
@@ -361,11 +367,11 @@ def web_ui() -> str:
     }
     .samples-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 0.5rem;
     }
     @media (min-width: 520px) {
-      .samples-grid { grid-template-columns: repeat(4, 1fr); }
+      .samples-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     }
     .sample-btn {
       display: flex;
@@ -379,6 +385,8 @@ def web_ui() -> str:
       cursor: pointer;
       transition: all 0.2s;
       text-align: left;
+      min-width: 0;
+      overflow: hidden;
     }
     .sample-btn:hover {
       background: #ecfdf5;
@@ -419,6 +427,8 @@ def web_ui() -> str:
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
       margin-bottom: 0.75rem;
       padding-bottom: 0.5rem;
       border-bottom: 1px solid var(--border);
@@ -427,6 +437,8 @@ def web_ui() -> str:
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      min-width: 0;
+      flex: 1 1 auto;
     }
     .file-badge {
       font-size: 0.78rem;
@@ -436,7 +448,8 @@ def web_ui() -> str:
       border: 1px solid #d1fae5;
       padding: 0.2rem 0.55rem;
       border-radius: 6px;
-      max-width: 240px;
+      max-width: min(240px, 100%);
+      min-width: 0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -520,7 +533,10 @@ def web_ui() -> str:
     .specimen-pane img {
       width: 100%;
       height: 180px;
-      object-fit: cover;
+      /* contain, not cover: the Grad-CAM render is square while the source photo
+         keeps its native ratio, so cropping would misalign the two panes. */
+      object-fit: contain;
+      background: #ffffff;
       border-radius: 6px;
       display: block;
     }
@@ -622,6 +638,9 @@ def web_ui() -> str:
     @keyframes pulse-slide {
       0% { left: -40%; }
       100% { left: 100%; }
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     .hint {
@@ -1049,6 +1068,35 @@ def web_ui() -> str:
       margin-top: 1.5rem;
       font-size: 0.78rem;
       color: var(--muted);
+    }
+
+    /* ── Narrow viewports ── */
+    @media (max-width: 520px) {
+      body { padding: 1.25rem 0.75rem 2.5rem; }
+
+      .header h1 { font-size: 1.55rem; }
+      .header p { font-size: 0.86rem; }
+
+      .card { padding: 1.15rem; }
+      .links-card { padding: 1rem 1.15rem; }
+
+      .drop-zone { padding: 1.6rem 1rem; }
+
+      /* Stack the two panes so each specimen stays legible */
+      .side-by-side-grid { grid-template-columns: 1fr; }
+      .specimen-pane img { height: 200px; }
+
+      .view-modes-bar { gap: 0.35rem; }
+      .mode-pill { padding: 0.3rem 0.55rem; font-size: 0.72rem; }
+
+      .diag-title { font-size: 1.2rem; }
+      .prob-section { padding: 1rem; }
+
+      .result-action-btn { flex: 1 1 100%; justify-content: center; }
+
+      .telemetry-content { padding: 1.15rem; }
+      .telemetry-header h2 { font-size: 1.1rem; }
+      .kpi-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
