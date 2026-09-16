@@ -55,3 +55,9 @@ logs-*.txt
 
 # Databases
 *.db
+
+# Tool caches
+.ruff_cache/
+
+# Archive files
+*.7z
