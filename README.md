@@ -206,13 +206,12 @@ A smart agriculture platform can use this system to:
 
 ---
 
-### **Cloud Deployment (Free Tier)** — live
+### **Cloud Deployment (Free Tier)**
 
 | Surface | Link |
 |---------|------|
 | **Streamlit dashboard** | Deployed on Streamlit Cloud (`app/app.py`) — full UI with Grad-CAM |
-| **Inference API** | https://rice-leaf-api-5obmkzpuaa-el.a.run.app |
-| **API docs** | https://rice-leaf-api-5obmkzpuaa-el.a.run.app/docs |
+| **Inference API** | Not currently deployed (Cloud Run service removed Oct 2026; redeploy steps in [docs/DEPLOY.md](docs/DEPLOY.md)) |
 | **Model artifacts** | https://huggingface.co/jegadeesh17/rice-leaf-disease-model |
 
 **Local run:** `streamlit run app/app.py` (same UI as cloud; model from `models/` or HF).

@@ -59,7 +59,6 @@ streamlit run app/app.py
 If deployed (see [DEPLOY.md](DEPLOY.md)):
 
 - **Streamlit Cloud:** open your live app (`app/app.py`) — same flow as section 3
-- **Cloud Run API:** https://rice-leaf-api-5obmkzpuaa-el.a.run.app/docs — upload via Swagger
-- **Health check:** `curl https://rice-leaf-api-5obmkzpuaa-el.a.run.app/health`
+- **Cloud Run API:** not currently deployed (removed Oct 2026). Redeploy via [DEPLOY.md](DEPLOY.md) Step 5, or run locally with Docker.
 
-**Interview pitch:** Streamlit for full diagnostics + explainability; Cloud Run for programmatic inference and Swagger.
+**Interview pitch:** Streamlit for full diagnostics + explainability; the FastAPI service (containerised, deployable to Cloud Run on demand) for programmatic inference and Swagger.

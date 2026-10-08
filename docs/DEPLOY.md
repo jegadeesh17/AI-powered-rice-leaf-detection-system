@@ -1,20 +1,14 @@
 # Deploy Rice Leaf Detection (Free Tier)
 
-**Status: deployed and verified** (July 2026)
+**Status: Streamlit and Hugging Face model deployed; Cloud Run API removed (October 2026) to stay within free-tier limits.** Redeploy it any time with Step 5.
 
 | Surface | Status | URL / entry |
 |---------|--------|-------------|
 | Streamlit (local) | Verified | `streamlit run app/app.py` |
 | Streamlit Cloud | Verified | `app/app.py` on [share.streamlit.io](https://share.streamlit.io) |
-| Cloud Run API | Verified | https://rice-leaf-api-5obmkzpuaa-el.a.run.app |
+| Cloud Run API | Not deployed | Redeploy via Step 5 |
 | Hugging Face model | Verified | https://huggingface.co/jegadeesh17/rice-leaf-disease-model |
 | GCP project | `ml-portfolio-501915` | region `asia-south1` |
-
-**Endpoints**
-
-- API health: https://rice-leaf-api-5obmkzpuaa-el.a.run.app/health
-- Swagger: https://rice-leaf-api-5obmkzpuaa-el.a.run.app/docs
-- Browser UI (after latest deploy): https://rice-leaf-api-5obmkzpuaa-el.a.run.app/
 
 **Note:** Streamlit Cloud may load the model from **Git LFS** in the repo (file exists at `models/` after clone). Cloud Run loads from **Hugging Face** at container startup (`HF_MODEL_REPO`).
 
@@ -108,11 +102,11 @@ In repo **Settings → Secrets and variables → Actions**, add:
 
 1. GitHub → **Actions** → **Deploy API to Cloud Run** → **Run workflow**
 2. When finished, note the service URL from the workflow log
-3. Test:
+3. Test (replace `<SERVICE_URL>` with that URL):
 
 ```bash
-curl https://rice-leaf-api-5obmkzpuaa-el.a.run.app/health
-curl -X POST https://rice-leaf-api-5obmkzpuaa-el.a.run.app/predict -F "file=@leaf.jpg"
+curl <SERVICE_URL>/health
+curl -X POST <SERVICE_URL>/predict -F "file=@leaf.jpg"
 ```
 
 ## Local Docker test (optional)
@@ -144,11 +138,7 @@ docker run -p 8080:8080 -e HF_MODEL_REPO=jegadeesh17/rice-leaf-disease-model ric
 
 ### Built-in web UI on Cloud Run
 
-After deploying the API, open:
-
-```
-https://rice-leaf-api-5obmkzpuaa-el.a.run.app/
-```
+After deploying the API, open the service URL (`<SERVICE_URL>/`).
 
 Upload an image in the browser — it calls `POST /predict` on the same service. No separate Streamlit API client needed.
 
