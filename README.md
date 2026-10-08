@@ -177,7 +177,7 @@ python src/train.py
 python src/train.py --demo
 ```
 
-Full details: [data/DATA_SETUP.md](data/DATA_SETUP.md). Dashboard:
+Dashboard:
 
 ```bash
 pytest tests/ -q
@@ -216,7 +216,7 @@ A smart agriculture platform can use this system to:
 
 **Local run:** `streamlit run app/app.py` (same UI as cloud; model from `models/` or HF).
 
-**Guides:** [docs/DEPLOY.md](docs/DEPLOY.md) · [../DEPLOY_GUIDE.md](../DEPLOY_GUIDE.md)
+**Guides:** [docs/DEPLOY.md](docs/DEPLOY.md)
 
 **Stack:** EfficientNetB0 · FastAPI · GCP Cloud Run · Hugging Face Hub · Streamlit Cloud · GitHub Actions
 

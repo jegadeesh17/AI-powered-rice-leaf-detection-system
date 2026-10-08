@@ -13,7 +13,7 @@ python src/train.py
 pytest tests/ -q
 ```
 
-See [data/DATA_SETUP.md](../data/DATA_SETUP.md). For a fast synthetic smoke test only: `python src/train.py --demo`.
+For a fast synthetic smoke test only: `python src/train.py --demo`.
 
 If you already downloaded the Mendeley `.7z` manually, use `python scripts/download_and_split_dataset.py --from-archive path\to\file.7z --replace`.
 
