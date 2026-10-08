@@ -151,8 +151,7 @@ uvicorn api.main:app --port 8000
 streamlit run app/app.py
 ```
 
-**Production training:** `pip install py7zr` → `python scripts/download_and_split_dataset.py --replace` → `python src/train.py`  
-See [data/DATA_SETUP.md](../data/DATA_SETUP.md).
+**Production training:** `pip install py7zr` → `python scripts/download_and_split_dataset.py --replace` → `python src/train.py`
 
 ---
 
